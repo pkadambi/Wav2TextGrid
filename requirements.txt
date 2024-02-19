@@ -48,9 +48,9 @@ speechbrain==0.5.16
 sympy==1.12
 threadpoolctl==3.3.0
 tokenizers==0.15.2
-torch==2.2.0+cpu
-torchaudio==2.2.0+cpu
-torchvision==0.17.0+cpu
+torch==2.2.0
+torchaudio==2.2.0
+torchvision==0.17.0
 tqdm==4.66.2
 transformers==4.37.2
 typing_extensions==4.9.0
