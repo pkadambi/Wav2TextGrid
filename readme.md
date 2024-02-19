@@ -1,6 +1,10 @@
 # Wav2TextGrid
 **Alpha 0.1 version** of the Wav2TextGrid phonetic forced aligner.
 
+## Installation
+
+`pip install Wav2TextGrid`
+
 ------
 ## Demo/Usage
 

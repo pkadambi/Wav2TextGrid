@@ -5,8 +5,8 @@ import pickle as pkl
 import torch
 from tqdm import tqdm
 import pdb
-from aligner_core.xvec_extractor import xVecExtractor
-from aligner_core.aligner import xVecSAT_forced_aligner
+from .aligner_core.xvec_extractor import xVecExtractor
+from .aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
 
 xvx = xVecExtractor(method='xvector')
@@ -25,8 +25,7 @@ def align_file(wavfilepath, transcriptfilepath, outfilepath):
     aligner.serve(audio=wavfilepath, text=transcript, save_to=outfilepath, ixvector=xvector)
 
 
-def align():
-
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('wavfile_or_dir', type=str)
     parser.add_argument('transcriptfile_or_dir', type=str)
@@ -81,4 +80,4 @@ def align_dirs(args):
 
 
 if __name__=='__main__':
-    align()
+    main()
