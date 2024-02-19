@@ -8,7 +8,7 @@
 ------
 ## Demo/Usage
 
-Please refer to the **Aligner Scope and Applicability** section to verify that your use case is a good fit for this alignment system.
+Please refer to the **Aligner Scope and Applicability** section to verify that your data and use case are a good fit for this alignment system. 
 
 ------
 
@@ -62,12 +62,17 @@ file1.lab:
 
 ---
 
-The aligner was trained on manual alignments from a corpus of children 3-7 years old, speaking sentences from the Test of Childhood Stuttering (TOCS) single word and short sentence utterances. The duration of each utterance was ~2-5s in length, and a total of ~3700 utterances (~2 hours of data) were used to train the model. The aligner likely will work best on similar data (short child speech utterances TOCS).
+If your data and use case do not align with the training data described below (short child speech utterances) for Wav2TextGrid, take care to verify the alignments produced by Wav2TextGrid.
 
-The system likely performs best on children from this same age range and on audio collected in this same context. Use in conversational speech or speech including both children and adults has not been validated.
+**Training data used**
+The aligner was trained on manual alignments from a corpus of children 3-7 years old, speaking sentences from the Test of Childhood Stuttering (TOCS), using both single word utterances and short sentences. The duration of each utterance was ~2-5s in length, and a total of ~3700 utterances (~2 hours of data) were used to train the model. The aligner likely will work best on similar data (short child speech utterances from TOCS).
+This training training on child speech was done after initializing using an existing system trained on adult speech (CommonVoice+LibriSpeech as training data). However, after fine-tuning on our child speech corpus, we did not verify Wav2TextGrid on adult speakers again.
+
+Thus, Wav2TextGrid likely performs best on children from this same age range and on audio collected in this same context. Use in conversational speech or speech including both children and adults has not been validated.
 
 **Usage on adult speakers**
-Wav2TextGrid has been fine-tuned using a model system trained to align CommonVoice utterances (adult speech) to initialize weights. However, after fine-tuning on our child speech corpus, we did not verify Wav2TextGrid on adult speakers again. As the fine-tuning child speech dataset contained short utterances, Wav2TextGrid would likely work best on shorter adult specech utterances. 
+As previously mentioned, Wav2TextGrid has been fine-tuned on child speech using an initialization model trained to align CommonVoice and LibriSpeech utterances. But, Wav2TextGrid wasn't verified on adult speech data again after training on child speech data. As the fine-tuning child speech dataset contained short utterances, Wav2TextGrid would likely work best on shorter adult specech utterances. 
+
 
 
 ------
