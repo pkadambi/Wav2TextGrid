@@ -1,12 +1,14 @@
 from setuptools import setup, find_packages
+from pathlib import Path
 
 with open('requirements.txt') as f:
     required_packages = f.read().splitlines()
 
 setup(
     name='Wav2TextGrid',
-    version='0.0.12',
+    version='0.0.14',
     author="Prad Kadambi",
+    long_description="Please find documentation at https://github.com/pkadambi/Wav2TextGrid",
     description="A python forced alignment package",
     author_email="pkadambi@asu.edu",
     packages=find_packages(),

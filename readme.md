@@ -1,11 +1,18 @@
 # Wav2TextGrid
-**Alpha 0.1 version** of the Wav2TextGrid phonetic forced aligner.
+**Alpha 0.0.12 version** of the Wav2TextGrid phonetic forced aligner.
 
-## Installation
+## Installation + quick start
 
 `pip install Wav2TextGrid`
 
-Python 3.9 required
+`git clone git@github.com:pkadambi/Wav2TextGrid.git`
+
+`cd Wav2TextGrid`
+
+`wav2textgrid ./Wav2TextGrid/examples/test.wav ./Wav2TextGrid/examples/test.lab ./test.TextGrid`
+Output text grid stored in test.TextGrid
+
+Python 3.10 required
 
 ------
 ## Demo/Usage
@@ -96,6 +103,5 @@ a frame-wise phoneme posterior, and Viterbi decoding to calculate the optimal al
 
 
 ## Acknowledgements
-We would like to thank the authors of the "Charsiu" alignment system found here: https://github.com/lingjzhu/charsiu. 
-
-Portions of this codebase have been adapted from the repo above. 
+We would like to thank the authors of the "Charsiu" aligner: https://github.com/lingjzhu/charsiu. 
+Parts our code have been adapted from the repo above. 
