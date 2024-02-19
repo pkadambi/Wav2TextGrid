@@ -8,6 +8,8 @@
 ------
 ## Demo/Usage
 
+Please refer to the **Aligner Scope and Applicability** section to verify that your use case is a good fit for this alignment system.
+
 ------
 
 
@@ -55,6 +57,17 @@ For example a `.lab` file may look like:
 file1.lab: 
 `SHE HAD YOUR DARK SUIT IN GREASY WASH WATER ALL YEAR`
 
+---
+## Aligner Scope of Applicability
+
+---
+
+The aligner was trained on manual alignments from a corpus of children 3-7 years old, speaking sentences from the Test of Childhood Stuttering (TOCS) single word and short sentence utterances. The duration of each utterance was ~2-5s in length, and a total of ~3700 utterances (~2 hours of data) were used to train the model. The aligner likely will work best on similar data (short child speech utterances TOCS).
+
+The system likely performs best on children from this same age range and on audio collected in this same context. Use in conversational speech or speech including both children and adults has not been validated.
+
+**Usage on adult speakers**
+Wav2TextGrid has been fine-tuned using a model system trained to align CommonVoice utterances (adult speech) to initialize weights. However, after fine-tuning on our child speech corpus, we did not verify Wav2TextGrid on adult speakers again. As the fine-tuning child speech dataset contained short utterances, Wav2TextGrid would likely work best on shorter adult specech utterances. 
 
 
 ------
