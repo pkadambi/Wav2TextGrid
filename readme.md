@@ -5,6 +5,8 @@
 
 `pip install Wav2TextGrid`
 
+Python 3.9 required
+
 ------
 ## Demo/Usage
 
