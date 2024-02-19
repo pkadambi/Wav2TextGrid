@@ -3,3 +3,4 @@
 pretrained_models*
 *examples*
 Wav2TextGrid.egg-info*
+/dist/

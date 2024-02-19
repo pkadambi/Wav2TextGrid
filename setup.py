@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='Wav2TextGrid',
-    version='0.0.14',
+    version='0.0.15',
     author="Prad Kadambi",
     long_description="Please find documentation at https://github.com/pkadambi/Wav2TextGrid",
     description="A python forced alignment package",
@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     install_requires=required_packages,
     classifiers=['Programming Language :: Python :: 3', 'License :: OSI Approved :: MIT License', 'Operating System :: OS Independent'],
-    python_requires='>=3.9',
+    python_requires='>=3.10',
     entry_points={
         'console_scripts': [
             'wav2textgrid = Wav2TextGrid.wav2textgrid:main'
