@@ -1,2 +1,0 @@
-[console_scripts]
-wav2textgrid = Wav2TextGrid.wav2textgrid:main
