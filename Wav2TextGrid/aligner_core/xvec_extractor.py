@@ -29,7 +29,7 @@ class xVecExtractor:
         signal = torchaudio.transforms.Resample(orig_freq=fs, new_freq=target_sample_rate)(signal)
         assert fs==16000, 'ERROR: YOU MUST SUPPLY A FILE WITH 16kHz sampling rate'
 
-        vadout = self.VAD.get_speech_segments(filename)
+        vadout = self.VAD.get_speech_segments(filename, large_chunk_size=1.5, small_chunk_size=0.5)
         if len(vadout.ravel()) > 2:
             start = int(vadout[0][0] * fs)
             end = int(vadout[-1][1] * fs)
