@@ -45,7 +45,7 @@ class xVecExtractor:
                 end = len(signal[0])
                 print(f'Warning VAD found no active speech segments for {filename}')
 
-                vadsig = signal[0][start:end]
+            vadsig = signal[0][start:end]
         except:
             print(f'Warning VAD internal failure for {filename}. Calculating x-vector with full utterance')
             vadsig = signal[0]
