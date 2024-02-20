@@ -29,21 +29,26 @@ class xVecExtractor:
         signal = torchaudio.transforms.Resample(orig_freq=fs, new_freq=target_sample_rate)(signal)
         assert fs==16000, 'ERROR: YOU MUST SUPPLY A FILE WITH 16kHz sampling rate'
 
-        vadout = self.VAD.get_speech_segments(filename, large_chunk_size=1.5, small_chunk_size=0.5)
-        if len(vadout.ravel()) > 2:
-            start = int(vadout[0][0] * fs)
-            end = int(vadout[-1][1] * fs)
-            print(f'Warning multiple active speech segments found for {filename}')
+        try:
+            vadout = self.VAD.get_speech_segments(filename, large_chunk_size=1.5, small_chunk_size=0.5)
+            if len(vadout.ravel()) > 2:
+                start = int(vadout[0][0] * fs)
+                end = int(vadout[-1][1] * fs)
+                print(f'Warning multiple active speech segments found for {filename}')
 
-        elif len(vadout) == 1:
-            start = int(vadout[0][0] * fs)
-            end = int(vadout[0][1] * fs)
-            # print(vadout, start, end)
-        else:
-            start = 0
-            end = len(signal[0])
-            print(f'Warning VAD fail for {filename}')
-        vadsig = signal[0][start:end]
+            elif len(vadout) == 1:
+                start = int(vadout[0][0] * fs)
+                end = int(vadout[0][1] * fs)
+                # print(vadout, start, end)
+            else:
+                start = 0
+                end = len(signal[0])
+                print(f'Warning VAD found no active speech segments for {filename}')
+
+                vadsig = signal[0][start:end]
+        except:
+            print(f'Warning VAD internal failure for {filename}. Calculating x-vector with full utterance')
+            vadsig = signal[0]
 
         output_emb = self.classifier.encode_batch(vadsig)
         return output_emb
