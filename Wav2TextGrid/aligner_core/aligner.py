@@ -196,7 +196,7 @@ class xVecSAT_forced_aligner(charsiu_aligner):
         elif output_format == 'textgrid':
             self._to_textgrid(phones, words, save_to)
         else:
-            raise Exception('Please specify the correct output format (tsv or textgird)!')
+            raise Exception('Please specify the correct output format (tsv or textgrid)!')
 
     def _to_textgrid(self, phones, words, save_to):
         '''
