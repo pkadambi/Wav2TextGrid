@@ -1,12 +1,13 @@
 '''
-All code in this file is attributed to:
+The code in this file has been adapted from:
 https://github.com/lingjzhu/charsiu
-Primary Author: lingjzhu
+Primary Author: lingjzhu, henrynomeland
 MIT license
 '''
 
 import numpy as np
 import re
+import os
 from praatio import textgrid
 from itertools import groupby
 from librosa.sequence import dtw
@@ -88,9 +89,13 @@ def word2textgrid(duration_seq, word_seq, save_path=None):
     wordTier = textgrid.IntervalTier('words', word_seq, 0, word_seq[-1][1])
     tg.addTier(wordTier)
     if save_path:
+        # if the subdirectory does not exist in the specified textgrids directory, they will be made
+        save_dir = os.path.dirname(save_path)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        # saves the textgrids in the corresponding directory/subdirectory
         tg.save(save_path, format="short_textgrid", includeBlankSpaces=False)
     return tg
-
 
 
 def forced_align(cost, phone_ids):

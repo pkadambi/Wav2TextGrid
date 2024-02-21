@@ -4,6 +4,7 @@ https://github.com/lingjzhu/charsiu
 Authors: lingjzhu, pkadambi
 MIT license
 '''
+
 import sys
 import torch
 from itertools import groupby
@@ -52,6 +53,7 @@ class charsiu_aligner:
             self.recognizer.eval().to(self.device)
 
     def align(self, audio, text):
+        print("WHAT?")
         raise NotImplementedError()
 
     def serve(self, audio, save_to, output_format='variable', text=None):
@@ -159,8 +161,9 @@ class xVecSAT_forced_aligner(charsiu_aligner):
         pred_phones = seq2duration(pred_phones, resolution=self.resolution)
 
         pred_words = self.charsiu_processor.align_words(pred_phones, phones, words)
+        
         return pred_phones, pred_words
-
+    
     def serve(self, audio, text, ixvector, save_to, target_phones=None, output_format='textgrid', verbose=False):
         '''
          A wrapper function for quick inference
@@ -213,7 +216,7 @@ class xVecSAT_forced_aligner(charsiu_aligner):
 
         '''
         word2textgrid(phones, words, save_path=save_to)
-        # print('Alignment output has been saved to %s'%(save_to))
+        print('Alignment output has been saved to %s'%(save_to))
 
     def _get_sil_mask(self, cost):
         # single out silent intervals
