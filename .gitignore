@@ -6,3 +6,5 @@ Wav2TextGrid.egg-info*
 /dist/
 /test_data
 /test_results
+*ipynb*
+*checkpoints*
