@@ -5,15 +5,18 @@ import pickle as pkl
 import torch
 from tqdm import tqdm
 import pdb
-from .aligner_core.xvec_extractor import xVecExtractor
-from .aligner_core.aligner import xVecSAT_forced_aligner
+from aligner_core.xvec_extractor import xVecExtractor
+from aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
 
 xvx = xVecExtractor(method='xvector')
 aligner = xVecSAT_forced_aligner('pkadambi/Wav2TextGrid', satvector_size=512)
 
 
-def align_file(wavfilepath, transcriptfilepath, outfilepath):
+def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False):
+    
+    if downsample==True:
+        xvx.downsample(wavfilepath)
 
     xvector = xvx.extract_xvector(wavfilepath)
     xvector = xvector[0][0].view(1, -1)
@@ -30,15 +33,20 @@ def main():
     parser.add_argument('wavfile_or_dir', type=str)
     parser.add_argument('transcriptfile_or_dir', type=str)
     parser.add_argument('outfile_or_dir', default=str)
+    parser.add_argument('--downsample', action='store_true')
     args = parser.parse_args()
 
     if os.path.isdir(args.wavfile_or_dir):
         align_dirs(args)
     else:
-        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir)
+        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample)
 
 
 def align_dirs(args):
+    
+    if args.downsample==True:
+        xvx.downsample(args.wavfile_or_dir)
+    
     # Get list of .wav files in directory1 and its subdirectories
     wav_files = glob.glob(os.path.join(args.wavfile_or_dir, '**/*.wav'), recursive=True)
     # Get list of .lab files in directory2 and its subdirectories
