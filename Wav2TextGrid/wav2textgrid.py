@@ -13,10 +13,13 @@ xvx = xVecExtractor(method='xvector')
 aligner = xVecSAT_forced_aligner('pkadambi/Wav2TextGrid', satvector_size=512)
 
 
-def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False):
+def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, mp3convert=False):
     
     if downsample==True:
         xvx.downsample(wavfilepath)
+    
+    if mp3convert==True:
+        xvx.mp3convert(wavfilepath)
 
     xvector = xvx.extract_xvector(wavfilepath)
     xvector = xvector[0][0].view(1, -1)
@@ -34,18 +37,22 @@ def main():
     parser.add_argument('transcriptfile_or_dir', type=str)
     parser.add_argument('outfile_or_dir', default=str)
     parser.add_argument('--downsample', action='store_true')
+    parser.add_argument('--mp3convert', action='store_true')
     args = parser.parse_args()
 
     if os.path.isdir(args.wavfile_or_dir):
         align_dirs(args)
     else:
-        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample)
+        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample, args.mp3convert)
 
 
 def align_dirs(args):
     
     if args.downsample==True:
         xvx.downsample(args.wavfile_or_dir)
+        
+    if args.mp3convert==True:
+        xvx.mp3convert(args.wavfile_or_dir)
     
     # Get list of .wav files in directory1 and its subdirectories
     wav_files = glob.glob(os.path.join(args.wavfile_or_dir, '**/*.wav'), recursive=True)
@@ -66,7 +73,7 @@ def align_dirs(args):
         if os.path.exists(lab_file):
             try:
                 # Align .wav and .lab files
-                align_file(wav_file, lab_file, outfpath)
+                align_file(wav_file, lab_file, outfpath) # always avoid downsampling because it occurs earlier
                 success_count += 1
             except Exception as e:
                 print(f"Alignment failed for {wav_file}: {e}")

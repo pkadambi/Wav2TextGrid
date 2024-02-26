@@ -10,6 +10,7 @@ import pickle as pkl
 import parselmouth
 from parselmouth.praat import call
 from pathlib import Path
+from pydub import AudioSegment
 
 class xVecExtractor:
 
@@ -37,6 +38,19 @@ class xVecExtractor:
             sound = parselmouth.Sound(wavfile_or_dir)
             sound = sound.resample(new_frequency=rate)
             sound.save(wavfile_or_dir, 'WAV')
+    
+    def mp3convert(self, wavfile_or_dir):
+        if os.path.exists(wavfile_or_dir):
+            for file in list(Path(wavfile_or_dir).rglob("*.[mM][pP][3]")):
+                file = str(file)
+                sound = parselmouth.Sound(file)
+                wav_filename = os.path.splitext(file)[0] + ".wav"
+                sound.save(wav_filename, 'WAV')
+        else:
+            file = str(file)
+            sound = parselmouth.Sound(file)
+            wav_filename = os.path.splitext(file)[0] + ".wav"
+            sound.save(wav_filename, 'WAV')
 
     def extract_xvector(self, filename):
         signal, fs = torchaudio.load(filename)
