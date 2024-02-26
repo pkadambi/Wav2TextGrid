@@ -48,11 +48,11 @@ def main():
 
 def align_dirs(args):
     
-    if args.downsample==True:
-        xvx.downsample(args.wavfile_or_dir)
-        
     if args.mp3convert==True:
         xvx.mp3convert(args.wavfile_or_dir)
+    
+    if args.downsample==True:
+        xvx.downsample(args.wavfile_or_dir)
     
     # Get list of .wav files in directory1 and its subdirectories
     wav_files = glob.glob(os.path.join(args.wavfile_or_dir, '**/*.wav'), recursive=True)
