@@ -25,13 +25,18 @@ class xVecExtractor:
     def extract_all_xvecs(self, filename, minlen=1):
         pass
     
-    def downsample(self, filename, rate=16000):
+    def downsample(self, wavfile_or_dir, rate=16000):
         # downsamples all of the wav files in the provided directory recursively
-        for file in list(Path(filename).rglob("*.[wW][aA][vV]")):
-            file = str(file)
-            sound = parselmouth.Sound(file)
+        if os.path.isdir(wavfile_or_dir):
+            for file in list(Path(wavfile_or_dir).rglob("*.[wW][aA][vV]")):
+                file = str(file)
+                sound = parselmouth.Sound(file)
+                sound = sound.resample(new_frequency=rate)
+                sound.save(file, 'WAV')
+        else:
+            sound = parselmouth.Sound(wavfile_or_dir)
             sound = sound.resample(new_frequency=rate)
-            sound.save(file, 'WAV')
+            sound.save(wavfile_or_dir, 'WAV')
 
     def extract_xvector(self, filename):
         signal, fs = torchaudio.load(filename)
