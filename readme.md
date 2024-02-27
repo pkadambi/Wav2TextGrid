@@ -96,7 +96,7 @@ As previously mentioned, Wav2TextGrid has been fine-tuned on child speech using 
 
 ------
 ### Pronunciation Dictionary
-The CMUdict in `g2p_en` python package is used to create the target phoneme sequence from the 
+The CMUdict in `g2p_en` python package is used to create the target phoneme sequence from the provided textgrid
 
 ### x-vector extraction
 
