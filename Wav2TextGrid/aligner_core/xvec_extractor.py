@@ -10,7 +10,6 @@ import pickle as pkl
 import parselmouth
 from parselmouth.praat import call
 from pathlib import Path
-from pydub import AudioSegment
 
 class xVecExtractor:
 
