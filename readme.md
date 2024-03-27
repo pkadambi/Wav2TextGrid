@@ -29,7 +29,7 @@ Please refer to the **Aligner Scope and Applicability** section to verify that y
 ------
 
 
-## Aligning a directory of .wav files
+## Preparing Your Corpus
 
 Say your audio is in `/path/to/wavfiles` and your transcripts are in `/path/to/transcripts` (note that these two 
 directories _can_ be the same), and you want the output TextGrids to be in `/path/to/outputTextGrids`.
