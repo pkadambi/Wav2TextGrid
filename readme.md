@@ -4,7 +4,15 @@
 Wav2TextGrid been tested on Ubuntu18.04, Ubuntu22.04, and Windows 11.
 
 The aligner is currently in development, please contact pkadami@asu.edu if you have any questions or issues in using the aligner
-
+## TODO
+The TODOs left will be completed by the end of April 2024.
+- [x] Codebase upload
+- [x] Setup Instructions
+- [x] Alignment Inference Demo
+- [ ] Add training code
+- [ ] Demo for training aligner system
+- [ ] GUI Application
+- [ ] Add training functionality to GUI (longer term)
 ## Installation + quick start
 
 `pip install Wav2TextGrid==0.0.19 --force-reinstall`
