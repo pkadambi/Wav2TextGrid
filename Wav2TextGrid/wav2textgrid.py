@@ -5,15 +5,14 @@ import pickle as pkl
 import torch
 from tqdm import tqdm
 import pdb
-from aligner_core.xvec_extractor import xVecExtractor
-from aligner_core.aligner import xVecSAT_forced_aligner
+from .aligner_core.xvec_extractor import xVecExtractor
+from .aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
 
-xvx = xVecExtractor(method='xvector')
-aligner = xVecSAT_forced_aligner('pkadambi/Wav2TextGrid', satvector_size=512)
 
 
-def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False):
+
+def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, target_phns=None):
     
     if downsample==True:
         xvx.downsample(wavfilepath)
@@ -25,7 +24,7 @@ def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False):
 
     transcript = open(transcriptfilepath, 'r').readlines()[0]
     transcript = transcript.replace('\n', '')
-    aligner.serve(audio=wavfilepath, text=transcript, save_to=outfilepath, ixvector=xvector)
+    aligner.serve(audio=wavfilepath, text=transcript, save_to=outfilepath, ixvector=xvector, target_phones=target_phns)
 
 
 def main():
@@ -34,12 +33,19 @@ def main():
     parser.add_argument('transcriptfile_or_dir', type=str)
     parser.add_argument('outfile_or_dir', default=str)
     parser.add_argument('--downsample', action='store_true')
+    parser.add_argument('aligner_model', type=str)
     args = parser.parse_args()
+
+    global xvx, aligner
+
+    xvx = xVecExtractor(method='xvector')
+    aligner = xVecSAT_forced_aligner('pkadambi/Wav2TextGrid', satvector_size=512)
 
     if os.path.isdir(args.wavfile_or_dir):
         align_dirs(args)
     else:
         align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample)
+
 
 
 def align_dirs(args):

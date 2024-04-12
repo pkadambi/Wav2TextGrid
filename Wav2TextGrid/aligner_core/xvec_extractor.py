@@ -2,8 +2,11 @@ import numpy as np
 import copy
 import os
 import torchaudio
-from speechbrain.pretrained import EncoderClassifier
-from speechbrain.pretrained import VAD
+from speechbrain.inference.speaker import EncoderClassifier
+from speechbrain.inference.VAD import VAD
+
+# from speechbrain.pretrained import EncoderClassifier
+# from speechbrain.pretrained import VAD
 import tqdm
 import torch
 import pickle as pkl
