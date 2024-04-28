@@ -16,14 +16,20 @@ from pathlib import Path
 
 class xVecExtractor:
 
-    def __init__(self, method, batch_size=128):
-        self.VAD = VAD.from_hparams(source="speechbrain/vad-crdnn-libriparty")
+    def __init__(self, method, batch_size=128, device='cpu'):
 
+        assert device in ['cuda', 'cpu'], 'Error: device must be `cuda` or `cpu`'
+
+        self.VAD = VAD.from_hparams(source="speechbrain/vad-crdnn-libriparty", run_opts={'device':device})
         if "xvec" in method:
-            self.classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb")
+            self.classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb", run_opts={'device':device})
         elif "ecapa" in method:
-            self.classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb")
+            self.classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", run_opts={'device':device})
         self.batch_size = batch_size
+
+        self.device = device
+        # self.classifier = self.classifier.to(device)
+        # self.VAD = self.VAD.to(device)
 
     def extract_all_xvecs(self, filename, minlen=1):
         pass
@@ -40,6 +46,7 @@ class xVecExtractor:
         signal, fs = torchaudio.load(filename)
         target_sample_rate = 16000
         signal = torchaudio.transforms.Resample(orig_freq=fs, new_freq=target_sample_rate)(signal)
+        signal = signal.to(self.device)
         assert fs==16000, 'ERROR: Samples must have 16kHz sampling rate, try running again with --downsample flag'
 
         try:

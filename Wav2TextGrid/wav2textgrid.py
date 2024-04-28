@@ -11,7 +11,6 @@ import argparse
 
 
 
-
 def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, target_phns=None):
     
     if downsample==True:

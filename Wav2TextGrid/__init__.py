@@ -1,0 +1,1 @@
+from .aligner_core.xvec_extractor import xVecExtractor
