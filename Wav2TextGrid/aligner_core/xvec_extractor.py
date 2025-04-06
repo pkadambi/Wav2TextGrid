@@ -4,7 +4,6 @@ import os
 import torchaudio
 from speechbrain.inference.speaker import EncoderClassifier
 from speechbrain.inference.VAD import VAD
-
 # from speechbrain.pretrained import EncoderClassifier
 # from speechbrain.pretrained import VAD
 import tqdm
@@ -33,15 +32,32 @@ class xVecExtractor:
 
     def extract_all_xvecs(self, filename, minlen=1):
         pass
-    
-    def downsample(self, filename, rate=16000):
+
+    def downsample(self, wavfile_or_dir, rate=16000):
         # downsamples all of the wav files in the provided directory recursively
-        for file in list(Path(filename).rglob("*.[wW][aA][vV]")):
+        if os.path.isdir(wavfile_or_dir):
+            for file in list(Path(wavfile_or_dir).rglob("*.[wW][aA][vV]")):
+                file = str(file)
+                sound = parselmouth.Sound(file)
+                sound = sound.resample(new_frequency=rate)
+                sound.save(file, 'WAV')
+        else:
+            sound = parselmouth.Sound(wavfile_or_dir)
+            sound = sound.resample(new_frequency=rate)
+            sound.save(wavfile_or_dir, 'WAV')
+
+    def mp3convert(self, wavfile_or_dir):
+        if os.path.exists(wavfile_or_dir):
+            for file in list(Path(wavfile_or_dir).rglob("*.[mM][pP][3]")):
+                file = str(file)
+                sound = parselmouth.Sound(file)
+                wav_filename = os.path.splitext(file)[0] + ".wav"
+                sound.save(wav_filename, 'WAV')
+        else:
             file = str(file)
             sound = parselmouth.Sound(file)
-            sound = sound.resample(new_frequency=rate)
-            sound.save(file, 'WAV')
-
+            wav_filename = os.path.splitext(file)[0] + ".wav"
+            sound.save(wav_filename, 'WAV')
     def extract_xvector(self, filename):
         signal, fs = torchaudio.load(filename)
         target_sample_rate = 16000
@@ -54,7 +70,7 @@ class xVecExtractor:
             if len(vadout.ravel()) > 2:
                 start = int(vadout[0][0] * fs)
                 end = int(vadout[-1][1] * fs)
-                print(f'Warning multiple active speech segments found for {filename}')
+                # print(f'Warning multiple active speech segments found for {filename}')
 
             elif len(vadout) == 1:
                 start = int(vadout[0][0] * fs)
@@ -63,7 +79,7 @@ class xVecExtractor:
             else:
                 start = 0
                 end = len(signal[0])
-                print(f'Warning VAD found no active speech segments for {filename}')
+                # print(f'Warning VAD found no active speech segments for {filename}')
 
             vadsig = signal[0][start:end]
         except:

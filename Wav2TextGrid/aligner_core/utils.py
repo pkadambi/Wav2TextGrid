@@ -9,8 +9,11 @@ import numpy as np
 import re
 import os
 from praatio import textgrid
+from praatio.data_classes.textgrid import Textgrid
 from itertools import groupby
 from librosa.sequence import dtw
+import pandas as pd
+from pathlib import Path
 
 def seq2duration(phones, resolution=0.01):
     """
@@ -131,9 +134,102 @@ def forced_align(cost, phone_ids):
 
 
 
+def textgridpath_to_phonedf(txtgrid_path: str, phone_key: str, remove_numbers=False, replace_silence=False,
+                            silreplace_str='SIL', addsil=True):
+    '''
+    txtgrid_path - the path to the textgridfile
+    phone_key - the key in the textgrid for the phoneme column
+    '''
+    txtgrid = textgrid.openTextgrid(txtgrid_path, False)
+    phndf = extract_phone_df_from_textgrid(txtgrid=txtgrid, phone_key=phone_key, remove_numbers=remove_numbers)
+
+    if replace_silence:
+        phndf = phndf.replace('[SIL]', silreplace_str)
+        phndf = phndf.replace('sp', silreplace_str)
+
+    # Function to uppercase string columns
+    def uppercase_strings(x):
+        if isinstance(x, str):
+            return x.upper()
+        return x
+
+    # Apply the function to each element in the DataFrame
+    phndf = phndf.applymap(uppercase_strings)
+
+    return phndf
 
 
+def extract_phone_df_from_textgrid(txtgrid: Textgrid, phone_key, remove_numbers=False,
+                                   silchar='[SIL]', replace_SP=True):
+    '''
+        txtgrid - praatio textgrid
+        phone_key - the key for the phonemes
+    '''
+    try:
+        phonelist = txtgrid._tierDict[phone_key].entries
+    except:
+        phonelist = txtgrid.tierDict[phone_key].entryList
+
+    phonedf = []
+    for interval in phonelist:
+        _phone = interval.label
+        if remove_numbers:
+            _phone = re.sub(r'[0-9]+', '', _phone)
+        phonedf.append([interval.start, interval.end, _phone])
 
 
+    # why is this silence replace code duplicated? Because the output of this function will
+    # contain textgrids with the silence character as [SIL] always
+    phonedf = pd.DataFrame(phonedf, columns=['start', 'end', 'phone'])
+    phonedf = phonedf.replace('sil', silchar)
+    if replace_SP:
+        phonedf = phonedf.replace('sp', silchar)
+        phonedf = phonedf.replace('spn', silchar)
+
+    return phonedf
+
+
+def get_all_filetype_in_dir(directory, extension):
+    extension = f'.{extension}' if '.' not in extension else extension
+    files = []
+    for path in Path(directory).rglob(f'*{extension}'):
+        files.append(str(path.resolve()))
+    return files
+
+
+def get_filename_with_upper_dirs(path, num_upper_dirs):
+    """
+    Extracts the filename along with a specified number of upper directories from the given path.
+
+    Args:
+        path (str or Path): The path from which to extract the filename.
+        num_upper_dirs (int): The number of upper directories to include.
+
+    Returns:
+        str: The filename with the specified number of upper directories.
+    """
+    path = Path(path)
+    # Get the desired upper directories
+    upper_dirs = path.parts[-(num_upper_dirs + 1):-1]
+    # Join the upper directories and the filename
+    filename_with_upper_dirs = '/'.join(upper_dirs + (path.name,))
+    return filename_with_upper_dirs
+
+def get_matching_file_in_list(file_match_str: str, file_paths_to_search, verbose=True):
+    filestem = get_filename_with_upper_dirs(file_match_str, num_upper_dirs=1)
+    corresponding_files = [file for file in file_paths_to_search if filestem in file]
+
+    if len(corresponding_files) > 1:
+        if verbose:
+            print(f'Error found more than one matching file in file_paths_to_search for filename {file_match_str}')
+        raise Exception(f'Error found more than one matching file in file_paths_to_search for filename {file_match_str}')
+
+    elif len(corresponding_files) == 0:
+        if verbose:
+            print(f'Error did not find any matching files in file_paths_to_search for filename {file_match_str}')
+        raise Exception('Error did not find any matching files in file_paths_to_search')
+
+    else:
+        return corresponding_files[0]
 
 

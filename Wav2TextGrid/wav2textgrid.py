@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+
+'''
+Author: Prad Kadambi
+Paper: https://pubs.asha.org/doi/10.1044/2024_JSLHR-24-00347
+
+'''
 import glob
 import os
 import pickle as pkl
@@ -10,10 +16,12 @@ from .aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
 
 
-
-def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, target_phns=None):
+def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, mp3convert=False, target_phns=None):
     
-    if downsample==True:
+    if mp3convert==True:
+        xvx.mp3convert(wavfilepath)
+
+    if downsample == True:
         xvx.downsample(wavfilepath)
 
     xvector = xvx.extract_xvector(wavfilepath)
@@ -33,6 +41,7 @@ def main():
     parser.add_argument('outfile_or_dir', default=str)
     parser.add_argument('--downsample', action='store_true')
     parser.add_argument('aligner_model', type=str)
+    parser.add_argument('--mp3convert', action='store_true')
     args = parser.parse_args()
 
     global xvx, aligner
@@ -43,15 +52,16 @@ def main():
     if os.path.isdir(args.wavfile_or_dir):
         align_dirs(args)
     else:
-        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample)
-
-
+        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample,
+                   args.mp3convert)
 
 def align_dirs(args):
-    
+    if args.mp3convert == True:
+        xvx.mp3convert(args.wavfile_or_dir)
+
     if args.downsample==True:
         xvx.downsample(args.wavfile_or_dir)
-    
+
     # Get list of .wav files in directory1 and its subdirectories
     wav_files = glob.glob(os.path.join(args.wavfile_or_dir, '**/*.wav'), recursive=True)
     # Get list of .lab files in directory2 and its subdirectories
@@ -71,7 +81,7 @@ def align_dirs(args):
         if os.path.exists(lab_file):
             try:
                 # Align .wav and .lab files
-                align_file(wav_file, lab_file, outfpath)
+                align_file(wav_file, lab_file, outfpath)# always avoid downsampling because it occurs earlier
                 success_count += 1
             except Exception as e:
                 print(f"Alignment failed for {wav_file}: {e}")

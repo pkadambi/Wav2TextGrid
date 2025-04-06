@@ -17,7 +17,8 @@ setup(
     python_requires='>=3.10',
     entry_points={
         'console_scripts': [
-            'wav2textgrid = Wav2TextGrid.wav2textgrid:main'
+            'wav2textgrid = Wav2TextGrid.wav2textgrid:main',
+            'wav2textgrid_train = Wav2TextGrid.wav2textgrid_train:main'
         ]
     }
 )

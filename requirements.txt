@@ -55,3 +55,4 @@ tqdm==4.66.2
 transformers==4.37.2
 typing_extensions==4.9.0
 urllib3==2.2.1
+pydub==0.25.1
