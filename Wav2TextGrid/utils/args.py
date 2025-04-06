@@ -48,7 +48,7 @@ def parse_args():
     parser.add_argument('--words_key', default='words')
     parser.add_argument('--ntrain_epochs', type=int, default=50)
     parser.add_argument('--seed', type=int, default=1337)
-    parser.add_argument('--write_base_alignments', default=True, action='store_false')
+    parser.add_argument('--no_write_base_alignments', default=True, action='store_false')
     parser.add_argument('--clean', default=False, action='store_true')
     parser.add_argument('--tokenizer_name', default='charsiu/tokenizer_en_cmu')
     parser.add_argument('--model_name', default='pkadambi/Wav2TextGrid')
@@ -84,7 +84,7 @@ def parse_args():
         SATVECTOR_DCTPATH=args.sat_vectors_dctfile,
         SEED=args.seed,
         NTRAIN_EPOCHS=args.ntrain_epochs,
-        WRITE_BASE_ALIGNMENTS=args.write_base_alignments,
+        WRITE_BASE_ALIGNMENTS=args.no_write_base_alignments,
         HAS_EVAL_DATASET=bool(args.eval_textgrids_dir),
         CLEAN=args.clean
     )

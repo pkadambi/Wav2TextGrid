@@ -86,7 +86,7 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         evaluation_strategy=eval_strategy,
         num_train_epochs=args.NTRAIN_EPOCHS,
         fp16=True,
-        save_steps=500,
+        save_steps=-1,
         eval_steps=500,
         logging_steps=10,
         learning_rate=2e-4,
@@ -107,6 +107,11 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
 
     MODEL_DIR_IS_EMPTY = not os.listdir(args.MODEL_OUTPUT_DIR)
     if MODEL_DIR_IS_EMPTY or args.RETRAIN:
+        print('***************************************************************')
+        print('***************************************************************')
+        print('\t\t\t BEGAN TRAINING \t\t\t')
+        print('***************************************************************')
+        print('***************************************************************')
         trainer.train()
         trainer.save_model(args.MODEL_OUTPUT_DIR)
         torch.save(trainer.model.state_dict(), os.path.join(args.MODEL_OUTPUT_DIR, 'pytorch_model.bin'))
