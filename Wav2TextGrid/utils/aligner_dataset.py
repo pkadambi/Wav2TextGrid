@@ -43,7 +43,7 @@ class AlignerDataset(torch.utils.data.Dataset):
             print('\nExtracting SAT Vectors')
             # satvector_path = f'{split}_{satvector_path}' if split is not None else satvector_path
             if not os.path.exists(satvector_path) or args.CLEAN:
-                xvx = xVecExtractor(adaptation_type, batch_size=64, device='cuda')
+                xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
                 self.satvector_dict = get_satvector_dict(audio_paths=audio_paths, adaptation_type=adaptation_type, xvextractor=xvx)
 
                 if not os.path.exists(satvector_path):
@@ -55,7 +55,7 @@ class AlignerDataset(torch.utils.data.Dataset):
                 self.satvectors = [self.satvector_dict[pth] for pth in self.audio_paths]
             except:
                 print('Did not find expected files in previously speaker adaptation vectors... extracting again...')
-                xvx = xVecExtractor(adaptation_type, batch_size=64, device='cuda')
+                xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
                 self.satvector_dict = get_satvector_dict(audio_paths=audio_paths, adaptation_type=adaptation_type, xvextractor=xvx)
 
                 pkl.dump(self.satvector_dict, open(satvector_path, 'wb'))

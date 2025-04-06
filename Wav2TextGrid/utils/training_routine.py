@@ -86,13 +86,13 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         evaluation_strategy=eval_strategy,
         num_train_epochs=args.NTRAIN_EPOCHS,
         fp16=True,
-        save_steps=-1,
+        save_strategy='no',
         eval_steps=500,
         logging_steps=10,
         learning_rate=2e-4,
         weight_decay=0.0001,
         warmup_steps=warmup_steps,
-        save_total_limit=2,
+        save_total_limit=None,
     )
 
     trainer = Trainer(

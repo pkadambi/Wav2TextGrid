@@ -2,7 +2,7 @@
 import os
 from datasets import load_from_disk
 from Wav2TextGrid.aligner_core.utils import get_filename_with_upper_dirs, get_matching_file_in_list, get_all_filetype_in_dir
-from Wav2TextGrid.aligner_core.alignermodel import Wav2Vec2ForFrameClassificationSAT
+from Wav2TextGrid.aligner_core.alignermodel import Wav2Vec2ForFrameClassificationSAT, Wav2Vec2ForFrameClassification
 
 
 from .aligner_dataset import AlignerDataset
@@ -32,8 +32,10 @@ def prepare_framewise_dataset(batch, mapping, unk_method='ignore'):
 
 def create_dataset(dataset_audiofiles, dataset_textgrids, args, processor, suffix='train'):
     tokenizer = processor.tokenizer
-    model = Wav2Vec2ForFrameClassificationSAT.from_pretrained(
-        args.MODEL_NAME,
+    # model = Wav2Vec2ForFrameClassificationSAT.from_pretrained(
+    #     args.MODEL_NAME,
+    model = Wav2Vec2ForFrameClassification.from_pretrained(
+        'charsiu/en_w2v2_fc_10ms',
         # gradient_checkpointing=True,
         pad_token_id=tokenizer.pad_token_id,
         vocab_size=len(tokenizer.decoder)
