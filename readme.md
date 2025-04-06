@@ -11,8 +11,8 @@ The TODOs left will be completed by prior to the publication of the article.
 - [x] 
 - [x] Quickstart Demo
 - [x] Add training code
-- [ ] Demo for training aligner system [By 04/07]
-- [ ] GUI Application [By 04/04]
+- [ ] Demo for training aligner system [By 04/18]
+- [ ] GUI Application [By 04/18]
 - [ ] Add training functionality to GUI (longer term)
 
 ### Testing
