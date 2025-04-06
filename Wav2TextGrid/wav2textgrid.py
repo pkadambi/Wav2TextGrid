@@ -5,14 +5,21 @@ Author: Prad Kadambi
 Paper: https://pubs.asha.org/doi/10.1044/2024_JSLHR-24-00347
 
 '''
+
+if __name__ == "__main__" and __package__ is None:
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    # import Wav2TextGrid  # triggers absolute import resolution
+
 import glob
 import os
 import pickle as pkl
 import torch
 from tqdm import tqdm
 import pdb
-from .aligner_core.xvec_extractor import xVecExtractor
-from .aligner_core.aligner import xVecSAT_forced_aligner
+from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
+from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
 
 
@@ -90,6 +97,8 @@ def align_dirs(args):
             log_file.write("\nMissing transcript .lab files:\n")
             for missing_lab_file in missing_lab_files:
                 log_file.write(f"- {missing_lab_file}\n")
+
+
 
 
 if __name__ == '__main__':

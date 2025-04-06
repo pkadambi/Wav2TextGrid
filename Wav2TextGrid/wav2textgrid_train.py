@@ -5,12 +5,19 @@ Author: Prad Kadambi
 Paper: https://pubs.asha.org/doi/10.1044/2024_JSLHR-24-00347
 
 '''
+if __name__ == "__main__" and __package__ is None:
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    # import Wav2TextGrid  # triggers absolute import resolution
+
+
 import nltk
-from .utils.args import parse_args
-from .utils.processor import load_processor
-from .utils.dataset_utils import match_audio_textgrids, create_dataset
-from .utils.training_routine import perform_train_test_split_run
-from .aligner_core.utils import get_all_filetype_in_dir
+from Wav2TextGrid.utils.args import parse_args
+from Wav2TextGrid.utils.processor import load_processor
+from Wav2TextGrid.utils.dataset_utils import match_audio_textgrids, create_dataset
+from Wav2TextGrid.utils.training_routine import perform_train_test_split_run
+from Wav2TextGrid.aligner_core.utils import get_all_filetype_in_dir
 import tqdm
 
 
@@ -46,7 +53,6 @@ def main():
 
     perform_train_test_split_run(args=args, train_dataset=train_dataset,
                                   eval_dataset=eval_dataset, processor=processor)
-
 
 if __name__ == '__main__':
     main()

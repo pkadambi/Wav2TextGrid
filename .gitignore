@@ -8,3 +8,5 @@ Wav2TextGrid.egg-info*
 /test_results
 *ipynb*
 *checkpoints*
+Wav2TextGrid/data
+Wav2TextGrid/Wav2TextGridResults
