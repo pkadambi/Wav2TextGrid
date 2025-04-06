@@ -21,7 +21,7 @@ Add pytests to verify functionality
 
 ## Installation + quick start
 
-`pip install Wav2TextGrid==0.01.01 --force-reinstall`
+`pip install Wav2TextGrid==0.01.01`
 
 Make sure to include the flags and the correct version number, check PyPI for the most recent version: 
 https://pypi.org/project/Wav2TextGrid/

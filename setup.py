@@ -18,7 +18,7 @@ setup(
     entry_points={
         'console_scripts': [
             'w2tg = Wav2TextGrid.wav2textgrid:main',
-            'w2tg = Wav2TextGrid.wav2textgrid_train:main'
+            'w2tg_train = Wav2TextGrid.wav2textgrid_train:main'
         ]
     }
 )

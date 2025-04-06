@@ -1,1 +1,0 @@
-from .Wav2TextGrid.aligner_core import xVecExtractor

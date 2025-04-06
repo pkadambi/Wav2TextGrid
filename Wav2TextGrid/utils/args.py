@@ -46,7 +46,7 @@ def parse_args():
     parser.add_argument('--sat_method', default='xvec')
     parser.add_argument('--phone_key', default='phones')
     parser.add_argument('--words_key', default='words')
-    parser.add_argument('--ntrain_epochs', type=int, default=1)
+    parser.add_argument('--ntrain_epochs', type=int, default=50)
     parser.add_argument('--seed', type=int, default=1337)
     parser.add_argument('--write_base_alignments', default=True, action='store_false')
     parser.add_argument('--clean', default=False, action='store_true')
