@@ -1,5 +1,5 @@
 # Wav2TextGrid
-**Alpha 0.0.19 version** of the Wav2TextGrid phonetic forced aligner. 
+**Beta 0.01 version** of the Wav2TextGrid phonetic forced aligner. 
 
 Wav2TextGrid been tested on Ubuntu18.04, Ubuntu22.04, and Windows 11.
 
@@ -12,7 +12,7 @@ The TODOs left will be completed by prior to the publication of the article.
 - [x] Quickstart Demo
 - [x] Add training code
 - [ ] Demo for training aligner system [By 04/18]
-- [ ] GUI Application [By 04/18]
+- [ ] GUI Application [By 04/20]
 - [ ] Add training functionality to GUI (longer term)
 
 ### Testing
@@ -21,7 +21,7 @@ Add pytests to verify functionality
 
 ## Installation + quick start
 
-`pip install Wav2TextGrid==0.0.19 --force-reinstall`
+`pip install Wav2TextGrid==0.01.01 --force-reinstall`
 
 Make sure to include the flags and the correct version number, check PyPI for the most recent version: 
 https://pypi.org/project/Wav2TextGrid/

@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='Wav2TextGrid',
-    version='0.0.19',
+    version='0.01.01',
     author="Prad Kadambi",
     # long_description="Please find documentation at https://github.com/pkadambi/Wav2TextGrid",
     description="A python forced alignment package",
