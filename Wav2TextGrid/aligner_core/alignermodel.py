@@ -5,7 +5,7 @@ from transformers.modeling_outputs import CausalLMOutput, MaskedLMOutput
 
 
 class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
-    def __init__(self, config, satvector_size=64):
+    def __init__(self, config, satvector_size=512):
         super().__init__(config)
 
         self.wav2vec2 = Wav2Vec2Model(config)

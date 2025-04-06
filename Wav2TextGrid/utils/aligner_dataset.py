@@ -6,8 +6,8 @@ import numpy as np
 import pickle as pkl
 from datasets import Dataset, DatasetDict
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
-from ..aligner_core.xvec_extractor import xVecExtractor
-from ..aligner_core.utils import textgridpath_to_phonedf
+from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
+from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
 
 def get_satvector_dict(audio_paths, adaptation_type:str, xvextractor: xVecExtractor):
     SUPPORTED_SPEAKER_EMBEDDINGS = ['xvec', 'ecapa']
@@ -27,8 +27,8 @@ class AlignerDataset(torch.utils.data.Dataset):
     '''
     Extracts the textgrids, audios,
     '''
-    def __init__(self, audio_paths: list, textgrid_paths: list, phone_key:str='phones', words_key:str='words',
-                 adaptation_type:str='xvec', satvector_path:str=None, split: str=None, model:Wav2Vec2ForCTC = None):
+    def __init__(self, args, audio_paths: list, textgrid_paths: list, phone_key:str='phones', words_key:str='words',
+                 adaptation_type:str='xvec', satvector_path:str=None, model:Wav2Vec2ForCTC = None):
 
         self.audio_paths = audio_paths
         self.textgrid_paths = textgrid_paths
@@ -42,7 +42,7 @@ class AlignerDataset(torch.utils.data.Dataset):
         if satvector_path is not None: # make this a dictionary instead, there's no reason why this should be a csv
             print('\nExtracting SAT Vectors')
             # satvector_path = f'{split}_{satvector_path}' if split is not None else satvector_path
-            if not os.path.exists(satvector_path):
+            if not os.path.exists(satvector_path) or args.CLEAN:
                 xvx = xVecExtractor(adaptation_type, batch_size=64, device='cuda')
                 self.satvector_dict = get_satvector_dict(audio_paths=audio_paths, adaptation_type=adaptation_type, xvextractor=xvx)
 

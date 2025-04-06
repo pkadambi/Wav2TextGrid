@@ -16,13 +16,7 @@ from .aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
 
 
-def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, mp3convert=False, target_phns=None):
-    
-    if mp3convert==True:
-        xvx.mp3convert(wavfilepath)
-
-    if downsample == True:
-        xvx.downsample(wavfilepath)
+def align_file(wavfilepath, transcriptfilepath, outfilepath, target_phns=None):
 
     xvector = xvx.extract_xvector(wavfilepath)
     xvector = xvector[0][0].view(1, -1)
@@ -36,36 +30,33 @@ def align_file(wavfilepath, transcriptfilepath, outfilepath, downsample=False, m
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('wavfile_or_dir', type=str)
+    # parser.add_argument('--wavfile_or_dir', default='./examples/',type=str)
+    parser.add_argument('wavfile_or_dir',type=str)
+    # parser.add_argument('--transcriptfile_or_dir', default='./examples/', type=str)
     parser.add_argument('transcriptfile_or_dir', type=str)
-    parser.add_argument('outfile_or_dir', default=str)
-    parser.add_argument('--downsample', action='store_true')
-    parser.add_argument('aligner_model', type=str)
-    parser.add_argument('--mp3convert', action='store_true')
+    # parser.add_argument('transcriptfile_or_dir', default='./examples/', type=str)
+    # parser.add_argument('--outfile_or_dir', default='./test/')#default=str)
+    parser.add_argument('outfile_or_dir', type=str)#default=str)
+    parser.add_argument('--filetype', default='wav')
+    parser.add_argument('--aligner_model', type=str, default='pkadambi/Wav2TextGrid')
     args = parser.parse_args()
 
+    # args.
     global xvx, aligner
 
     xvx = xVecExtractor(method='xvector')
-    aligner = xVecSAT_forced_aligner('pkadambi/Wav2TextGrid', satvector_size=512)
+    aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
 
     if os.path.isdir(args.wavfile_or_dir):
         align_dirs(args)
     else:
-        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir, args.downsample,
-                   args.mp3convert)
+        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir)
+
 
 def align_dirs(args):
-    if args.mp3convert == True:
-        xvx.mp3convert(args.wavfile_or_dir)
-
-    if args.downsample==True:
-        xvx.downsample(args.wavfile_or_dir)
-
     # Get list of .wav files in directory1 and its subdirectories
-    wav_files = glob.glob(os.path.join(args.wavfile_or_dir, '**/*.wav'), recursive=True)
-    # Get list of .lab files in directory2 and its subdirectories
-    lab_files = glob.glob(os.path.join(args.transcriptfile_or_dir, '**/*.lab'), recursive=True)
+    wav_files = glob.glob(os.path.join(args.wavfile_or_dir, f'**/*.{args.filetype}'), recursive=True)
+
     success_count = 0
     failure_count = 0
     missing_lab_files = []
@@ -76,12 +67,12 @@ def align_dirs(args):
         # Generate corresponding .lab file path
         rel_path = os.path.relpath(wav_file, args.wavfile_or_dir)
         lab_file = os.path.join(args.transcriptfile_or_dir, os.path.splitext(rel_path)[0] + '.lab')
-        outfpath = os.path.join(args.outfile_or_dir, os.path.splitext(rel_path)[0]+'.TextGrid')
+        outfpath = os.path.join(args.outfile_or_dir, os.path.splitext(rel_path)[0] + '.TextGrid')
         # Check if .lab file exists
         if os.path.exists(lab_file):
             try:
                 # Align .wav and .lab files
-                align_file(wav_file, lab_file, outfpath)# always avoid downsampling because it occurs earlier
+                align_file(wav_file, lab_file, outfpath)  # always avoid downsampling because it occurs earlier
                 success_count += 1
             except Exception as e:
                 print(f"Alignment failed for {wav_file}: {e}")
@@ -94,13 +85,12 @@ def align_dirs(args):
     with open(os.path.join(args.outfile_or_dir, 'alignment.log'), 'w') as log_file:
         log_file.write(f"Successfully aligned: {success_count}\n")
         log_file.write(f"Alignment failures: {failure_count}\n")
+
         if missing_lab_files:
-            log_file.write("\nMissing transcript files:\n")
+            log_file.write("\nMissing transcript .lab files:\n")
             for missing_lab_file in missing_lab_files:
                 log_file.write(f"- {missing_lab_file}\n")
 
-    pass
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

@@ -18,7 +18,6 @@ from .utils import seq2duration, forced_align, duration2textgrid, word2textgrid
 from .processors import CharsiuPreprocessor_en
 
 
-
 class base_aligner:
 
     def __init__(self,
@@ -125,7 +124,7 @@ class xVecSAT_forced_aligner(base_aligner):
 
         if target_phones is not None:
             try:
-                if not (np.array(phones)==np.array(target_phones)).all():
+                if not (np.array(phones) == np.array(target_phones)).all():
                     print('target')
                     print(target_phones)
                     print('g2p')
@@ -138,7 +137,7 @@ class xVecSAT_forced_aligner(base_aligner):
                 print('g2p')
                 phnsg2p = [item for t in phones for item in t]
                 print(phnsg2p)
-            phones=target_phones
+            phones = target_phones
 
         phone_ids = self.base_processor.get_phone_ids(phones)
 
@@ -161,9 +160,9 @@ class xVecSAT_forced_aligner(base_aligner):
         pred_phones = seq2duration(pred_phones, resolution=self.resolution)
 
         pred_words = self.base_processor.align_words(pred_phones, phones, words)
-        
+
         return pred_phones, pred_words
-    
+
     def serve(self, audio, text, ixvector, save_to, target_phones=None, output_format='textgrid', verbose=False):
         '''
          A wrapper function for quick inference
@@ -276,13 +275,13 @@ class charsiu_forced_aligner(base_aligner):
         phones, words = self.charsiu_processor.get_phones_and_words(text)
 
         if target_phones is not None:
-            phones=target_phones
+            phones = target_phones
 
         phone_ids = self.charsiu_processor.get_phone_ids(phones)
 
         with torch.no_grad():
             out = self.aligner(audio)
-        cost = torch.softmax(out.logits/TEMPERATURE, dim=-1).detach().cpu().numpy().squeeze()
+        cost = torch.softmax(out.logits / TEMPERATURE, dim=-1).detach().cpu().numpy().squeeze()
 
         sil_mask = self._get_sil_mask(cost)
 
