@@ -69,7 +69,7 @@ Follow the kaldi style
 │ ├── file4.wav
 │ ├── file4.lab
 ```
-In this case both 
+
 
 ### Best Practice - `w2tg_train`
 Follow the kaldi style
