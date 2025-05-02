@@ -1,4 +1,4 @@
-Wav2TextGrid
+### Wav2TextGrid
 --- 
 
 *Version 0.1.2 (Beta)* — A phonetic forced aligner
@@ -9,6 +9,9 @@ Wav2TextGrid has been tested on Ubuntu 18.04, Ubuntu 22.04, and Windows 11.
 
 
 # 🚀 Installation + Quick Start
+
+### Wav2TextGridGUI
+- A Linux friendly (tested on Ubuntu 22.04 and 18.04) version of the aligner [can be found here](https://drive.google.com/file/d/1ZaRlLNE17y6OAivL_11NRLxlDbDWnOTh/view?usp=sharing)
 
 ---
 ### Required Dependencies
@@ -228,9 +231,10 @@ The TODOs left will be completed by prior to the publication of the article.
 - [x] ~~Aligner functionality~~
 - [x] ~~Quickstart Demo~~
 - [x] ~~Training code + functionality~~
-- [ ] Demo for training aligner system [By 04/20]
-- [ ] GUI Application [By 04/20]
-- [ ] Add training functionality to GUI (longer term) 
+- [ ] ~~Demo for training aligner system [By 04/20]~~
+- [ ] ~~GUI Application for Linux [By 04/20]~~
+- [ ] GUI Application for Windows (ongoing, will be complete by 05/31)
+- [ ] Add training functionality to GUI (longer term, likely by 06/31) 
 
 ## Attribution and Citation
 
