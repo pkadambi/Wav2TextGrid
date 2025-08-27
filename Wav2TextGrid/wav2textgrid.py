@@ -14,10 +14,8 @@ if __name__ == "__main__" and __package__ is None:
 
 import glob
 import os
-import pickle as pkl
 import torch
 from tqdm import tqdm
-import pdb
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner
 import argparse

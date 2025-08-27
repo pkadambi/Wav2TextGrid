@@ -12,7 +12,6 @@ from itertools import groupby
 sys.path.append('src/')
 import numpy as np
 # sys.path.insert(0,'src')
-import pdb
 from .alignermodel import Wav2Vec2ForFrameClassificationSAT, Wav2Vec2ForFrameClassification
 from .utils import seq2duration, forced_align, duration2textgrid, word2textgrid
 from .processors import CharsiuPreprocessor_en
