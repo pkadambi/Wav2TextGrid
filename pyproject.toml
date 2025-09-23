@@ -99,9 +99,12 @@ dependencies = [
   "xxhash==3.5.0",
   "yarl==1.18.3",
   # exclude on macOS and Windows
-  "triton==3.2.0; sys_platform != 'darwin' and sys_platform != 'win32'",
+ 
 ]
 
 [project.scripts]
 w2tg = "Wav2TextGrid.wav2textgrid:main"
 w2tg_train = "Wav2TextGrid.wav2textgrid_train:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
