@@ -79,7 +79,7 @@ class AlignerDataset(torch.utils.data.Dataset):
         if PLATFORM == "Windows":
             self.speaker_ids = [_path.split('\\')[-2] for _path in self.audio_paths]
             self.ids = [_path.split('\\')[-1].split('.')[-1] for _path in self.audio_paths]
-            
+
         else:
             self.speaker_ids = [_path.split('/')[-2] for _path in self.audio_paths]
             self.ids = [_path.split('/')[-1].split('.')[0] for _path in self.audio_paths]
@@ -105,13 +105,10 @@ class AlignerDataset(torch.utils.data.Dataset):
         pass
 
     def extract_text_transcript(self, path):
-        # Use os.path.splitext to properly handle file extensions
+        # Use os.path.splitext to handle file extensions
         import os
         transcript_path = os.path.splitext(path)[0] + '.lab'
-        
-        # Debug print to see what path is being generated
-        print(f"Looking for transcript: {transcript_path}")
-    
+
         try:
             with open(transcript_path, 'rb') as f:
                 transcript = f.read()
