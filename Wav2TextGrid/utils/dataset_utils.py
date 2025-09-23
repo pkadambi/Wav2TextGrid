@@ -8,14 +8,39 @@ from Wav2TextGrid.aligner_core.alignermodel import Wav2Vec2ForFrameClassificatio
 from .aligner_dataset import AlignerDataset
 
 
-def match_audio_textgrids(audio_files, textgrid_dir):
+def match_audio_textgrids(audio_files, textgrid_dir, allow_empty=False):
     import tqdm
     tg_files = get_all_filetype_in_dir(textgrid_dir, ".TextGrid")
-    matched = []
+    matched_audio = []
+    matched_textgrids = []
+    skipped_count = 0
+    
     for audio in tqdm.tqdm(audio_files, desc="Matching TextGrids"):
         target = get_filename_with_upper_dirs(audio, 1).replace('.wav', '.TextGrid')
-        matched.append(get_matching_file_in_list(target, tg_files))
-    return matched
+        try:
+            matched_tg = get_matching_file_in_list(target, tg_files)
+            matched_audio.append(audio)
+            matched_textgrids.append(matched_tg)
+        except Exception:
+            skipped_count += 1
+            # Print warning for first few files, then summarize
+            if skipped_count <= 5:
+                print(f"\nWarning: Skipping {os.path.basename(audio)} - no matching TextGrid")
+            elif skipped_count == 6:
+                print(f"\n... (suppressing further individual warnings)")
+            continue
+    
+    # Summary statistics
+    success_rate = len(matched_audio) / len(audio_files) * 100 if audio_files else 0
+    print(f"\n✅ Dataset Matching Summary:")
+    print(f"   • Successfully matched: {len(matched_audio)} pairs")
+    print(f"   • Skipped (no TextGrid): {skipped_count} files")
+    print(f"   • Success rate: {success_rate:.1f}%")
+    
+    if len(matched_audio) == 0 and not allow_empty:
+        raise ValueError("No matching audio-TextGrid pairs found! Check your file paths and naming conventions.")
+    
+    return matched_audio, matched_textgrids
 
 
 def prepare_framewise_dataset(batch, mapping, unk_method='ignore'):

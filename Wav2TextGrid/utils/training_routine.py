@@ -85,7 +85,7 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         gradient_accumulation_steps=8,
         evaluation_strategy=eval_strategy,
         num_train_epochs=args.NTRAIN_EPOCHS,
-        fp16=True,
+        fp16=False, # Changed to False for
         save_strategy='no',
         eval_steps=500,
         logging_steps=10,
@@ -126,4 +126,7 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
     ).to(args.DEVICE)
 
     aligner.aligner = model
-    write_textgrid_alignments_for_dataset(aligner, eval_dataset, args.TG_OUTPUT_DIR)
+    if eval_dataset is not None:
+        write_textgrid_alignments_for_dataset(aligner, eval_dataset, args.TG_OUTPUT_DIR)
+    else:
+        print("⚠️  Skipping evaluation alignment generation (no eval dataset available)")
