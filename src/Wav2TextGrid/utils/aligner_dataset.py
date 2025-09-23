@@ -10,6 +10,8 @@ from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
 import platform
 
+PLATFORM = platform.system()
+
 def get_satvector_dict(audio_paths, adaptation_type:str, xvextractor: xVecExtractor):
     SUPPORTED_SPEAKER_EMBEDDINGS = ['xvec', 'ecapa']
 
@@ -74,10 +76,13 @@ class AlignerDataset(torch.utils.data.Dataset):
         self.audios = self.extract_audio()
         self.audio_lens = [len(_audio) for _audio in self.audios]
 
-
-
-        self.speaker_ids = [_path.split('\\')[-2] for _path in self.audio_paths]
-        self.ids = [_path.split('\\')[-1].split('.')[-1] for _path in self.audio_paths]
+        if PLATFORM == "Windows":
+            self.speaker_ids = [_path.split('\\')[-2] for _path in self.audio_paths]
+            self.ids = [_path.split('\\')[-1].split('.')[-1] for _path in self.audio_paths]
+            
+        else:
+            self.speaker_ids = [_path.split('/')[-2] for _path in self.audio_paths]
+            self.ids = [_path.split('/')[-1].split('.')[0] for _path in self.audio_paths]
 
         #Step 1: extract word transcripts
         print('\nExtracting transcripts, phone and word bounds')
