@@ -8,6 +8,7 @@ from datasets import Dataset, DatasetDict
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
+import platform
 
 def get_satvector_dict(audio_paths, adaptation_type:str, xvextractor: xVecExtractor):
     SUPPORTED_SPEAKER_EMBEDDINGS = ['xvec', 'ecapa']
@@ -72,9 +73,11 @@ class AlignerDataset(torch.utils.data.Dataset):
         print('Loading audio files')
         self.audios = self.extract_audio()
         self.audio_lens = [len(_audio) for _audio in self.audios]
-        # Extract speaker ids and file ids
-        self.speaker_ids = [_path.split('/')[-2] for _path in self.audio_paths]
-        self.ids = [_path.split('/')[-1].split('.')[0] for _path in self.audio_paths]
+
+
+
+        self.speaker_ids = [_path.split('\\')[-2] for _path in self.audio_paths]
+        self.ids = [_path.split('\\')[-1].split('.')[-1] for _path in self.audio_paths]
 
         #Step 1: extract word transcripts
         print('\nExtracting transcripts, phone and word bounds')
@@ -96,13 +99,22 @@ class AlignerDataset(torch.utils.data.Dataset):
     def save_satvector_dict(self, satvector_path):
         pass
 
-    # assumes that the directory is in the file
     def extract_text_transcript(self, path):
-        transcript_path = path.split('.')[0] + '.lab'
-        f = open(transcript_path, 'rb')
-        transcript = f.read()
-        transcript = transcript.decode('utf-8').replace('\n', '')
-        return transcript
+        # Use os.path.splitext to properly handle file extensions
+        import os
+        transcript_path = os.path.splitext(path)[0] + '.lab'
+        
+        # Debug print to see what path is being generated
+        print(f"Looking for transcript: {transcript_path}")
+    
+        try:
+            with open(transcript_path, 'rb') as f:
+                transcript = f.read()
+            transcript = transcript.decode('utf-8').replace('\n', '')
+            return transcript
+        except FileNotFoundError:
+            print(f"Transcript file not found: {transcript_path}")
+            raise
 
     def extract_audio(self):
         return [librosa.load(_audio_path, sr=16000)[0] for _audio_path in tqdm.tqdm(self.audio_paths)]

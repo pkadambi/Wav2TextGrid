@@ -12,6 +12,7 @@ if __name__ == "__main__" and __package__ is None:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     # import Wav2TextGrid  # triggers absolute import resolution
 
+from pathlib import Path
 import glob
 import os
 import pickle as pkl
@@ -21,7 +22,7 @@ import pdb
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner
 import argparse
-
+import platform
 
 def align_file(wavfilepath, transcriptfilepath, outfilepath, target_phns=None):
 
@@ -62,19 +63,29 @@ def main():
 
 def align_dirs(args):
     # Get list of .wav files in directory1 and its subdirectories
-    wav_files = glob.glob(os.path.join(args.wavfile_or_dir, f'**/*.{args.filetype}'), recursive=True)
+    print(Path(args.wavfile_or_dir))
+    if platform.system() == "Windows":
+        # Use pathlib for Windows, especially with UNC paths
+        wav_files = [str(p) for p in Path(args.wavfile_or_dir).rglob(f'*.{args.filetype}')]
+    else:
+        wav_files = glob.glob(os.path.join(args.wavfile_or_dir, '**', f'*.{args.filetype}'), recursive=True)
 
     success_count = 0
     failure_count = 0
     missing_lab_files = []
     # Iterate over .wav files
     os.makedirs(args.outfile_or_dir, exist_ok=True)
+    print(wav_files)
 
     for wav_file in tqdm(wav_files):
         # Generate corresponding .lab file path
         rel_path = os.path.relpath(wav_file, args.wavfile_or_dir)
         lab_file = os.path.join(args.transcriptfile_or_dir, os.path.splitext(rel_path)[0] + '.lab')
         outfpath = os.path.join(args.outfile_or_dir, os.path.splitext(rel_path)[0] + '.TextGrid')
+
+        print(rel_path)
+        print(lab_file)
+        print(outfpath)
         # Check if .lab file exists
         if os.path.exists(lab_file):
             try:

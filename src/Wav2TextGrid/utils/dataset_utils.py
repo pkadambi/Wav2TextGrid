@@ -18,6 +18,7 @@ def match_audio_textgrids(audio_files, textgrid_dir, allow_empty=False):
     for audio in tqdm.tqdm(audio_files, desc="Matching TextGrids"):
         target = get_filename_with_upper_dirs(audio, 1).replace('.wav', '.TextGrid')
         try:
+
             matched_tg = get_matching_file_in_list(target, tg_files)
             matched_audio.append(audio)
             matched_textgrids.append(matched_tg)

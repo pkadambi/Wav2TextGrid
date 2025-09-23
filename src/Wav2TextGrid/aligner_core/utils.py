@@ -15,6 +15,10 @@ from librosa.sequence import dtw
 import pandas as pd
 from pathlib import Path
 
+import platform
+
+PLATFORM = platform.system()
+
 def seq2duration(phones, resolution=0.01):
     """
     xxxxx convert phone sequence to duration
@@ -193,6 +197,7 @@ def get_all_filetype_in_dir(directory, extension):
     extension = f'.{extension}' if '.' not in extension else extension
     files = []
     for path in Path(directory).rglob(f'*{extension}'):
+        print(str(path.resolve()))
         files.append(str(path.resolve()))
     return files
 
@@ -213,12 +218,17 @@ def get_filename_with_upper_dirs(path, num_upper_dirs):
     upper_dirs = path.parts[-(num_upper_dirs + 1):-1]
     # Join the upper directories and the filename
     filename_with_upper_dirs = '/'.join(upper_dirs + (path.name,))
+
+
     return filename_with_upper_dirs
 
 def get_matching_file_in_list(file_match_str: str, file_paths_to_search, verbose=True):
     filestem = get_filename_with_upper_dirs(file_match_str, num_upper_dirs=1)
-    corresponding_files = [file for file in file_paths_to_search if filestem in file]
 
+    if PLATFORM == "Windows":
+        filestem = filestem.replace("/", "\\")
+
+    corresponding_files = [file for file in file_paths_to_search if filestem in file]
     if len(corresponding_files) > 1:
         if verbose:
             print(f'Error found more than one matching file in file_paths_to_search for filename {file_match_str}')
