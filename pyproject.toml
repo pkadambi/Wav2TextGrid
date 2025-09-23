@@ -1,0 +1,25 @@
+[project]
+name = "wav2textgrid"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "argparse>=1.4.0",
+    "g2p-en>=2.1.0",
+    "librosa>=0.11.0",
+    "nltk>=3.9.1",
+    "numpy>=2.2.6",
+    "pandas>=2.3.2",
+    "praatio>=6.2.0",
+    "speechbrain>=1.0.3",
+    "torch>=2.8.0",
+    "torchaudio>=2.8.0",
+    "tqdm>=4.67.1",
+    "transformers>=4.55.4",
+]
+
+[project.optional-dependencies]
+train = [
+    "datasets>=4.0.0",
+]

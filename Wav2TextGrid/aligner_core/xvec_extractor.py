@@ -1,15 +1,7 @@
-import numpy as np
-import copy
-import os
 import torchaudio
 from speechbrain.inference.speaker import EncoderClassifier
 from speechbrain.inference.VAD import VAD
-import tqdm
 import torch
-import pickle as pkl
-import parselmouth
-from parselmouth.praat import call
-from pathlib import Path
 import librosa
 
 class xVecExtractor:
