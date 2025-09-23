@@ -61,7 +61,6 @@ def main():
 
 def align_dirs(args):
     # Get list of .wav files in directory1 and its subdirectories
-    print(Path(args.wavfile_or_dir))
     if platform.system() == "Windows":
         # Use pathlib for Windows, especially with UNC paths
         wav_files = [str(p) for p in Path(args.wavfile_or_dir).rglob(f'*.{args.filetype}')]
@@ -73,7 +72,6 @@ def align_dirs(args):
     missing_lab_files = []
     # Iterate over .wav files
     os.makedirs(args.outfile_or_dir, exist_ok=True)
-    print(wav_files)
 
     for wav_file in tqdm(wav_files):
         # Generate corresponding .lab file path
@@ -81,9 +79,6 @@ def align_dirs(args):
         lab_file = os.path.join(args.transcriptfile_or_dir, os.path.splitext(rel_path)[0] + '.lab')
         outfpath = os.path.join(args.outfile_or_dir, os.path.splitext(rel_path)[0] + '.TextGrid')
 
-        print(rel_path)
-        print(lab_file)
-        print(outfpath)
         # Check if .lab file exists
         if os.path.exists(lab_file):
             try:
