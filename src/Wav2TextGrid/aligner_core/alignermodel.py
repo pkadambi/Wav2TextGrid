@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from transformers import Wav2Vec2ForCTC, Wav2Vec2ForPreTraining, Wav2Vec2Model
-from transformers.modeling_outputs import CausalLMOutput, MaskedLMOutput
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Model
+from transformers.modeling_outputs import CausalLMOutput
 
 
 class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
@@ -22,28 +22,10 @@ class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
             config.output_hidden_size if hasattr(config, "add_adapter") and config.add_adapter else config.hidden_size
         )
         self.lm_head = nn.Linear(output_hidden_size, config.vocab_size)
-
         self.lm_head_ivec = nn.Linear(output_hidden_size + satvector_size, config.vocab_size )
 
-        #transfer the weights
-        orig_weights = self.lm_head.weight.data.detach().numpy()
-        orig_bias = self.lm_head.bias.data.detach().numpy()
-
-        weight_shape = self.lm_head.weight.shape
-        bias_shape = self.lm_head.bias.shape
-
-        weights = self.lm_head_ivec.weight.data.detach().numpy()
-        biases = self.lm_head_ivec.bias.data.detach().numpy()
-
-        weights[:weight_shape[0], :weight_shape[1]] = orig_weights
-        biases[:bias_shape[0]] = orig_bias
-
-        self.lm_head_ivec.weight.data = torch.tensor(weights)
-        self.lm_head_ivec.bias.data = torch.tensor(biases)
-
-
-        # Initialize weights and apply final processing
         self.post_init()
+
 
     def forward(
             self,
@@ -102,9 +84,22 @@ class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
             loss=loss, logits=logits, hidden_states=outputs.hidden_states, attentions=outputs.attentions
         )
 
+def _init_ivec_head_from_lm_head(self):
+    with torch.no_grad():
+        self.lm_head_ivec.weight.zero_()
+        self.lm_head_ivec.bias.zero_()
 
+        W = self.lm_head.weight      # [vocab, hidden]
+        b = self.lm_head.bias        # [vocab]
 
+        self.lm_head_ivec.weight[:W.size(0), :W.size(1)].copy_(W)
+        self.lm_head_ivec.bias[:b.size(0)].copy_(b)
 
+@classmethod
+def from_pretrained(cls, *args, **kwargs):
+    model = super().from_pretrained(*args, **kwargs)
+    model._init_ivec_head_from_lm_head() 
+    return model
 
 
 class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):

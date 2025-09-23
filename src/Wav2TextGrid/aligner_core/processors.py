@@ -14,12 +14,11 @@ import unicodedata
 from builtins import str as unicode
 from nltk.tokenize import TweetTokenizer
 
-word_tokenize = TweetTokenizer().tokenize
-
 from g2p_en import G2p
 from g2p_en.expand import normalize_numbers
 from transformers import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor
 
+word_tokenize = TweetTokenizer().tokenize
 
 class CharsiuPreprocessor:
 
