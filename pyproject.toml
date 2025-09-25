@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "Wav2TextGrid"
 version = "0.1.2"
 description = "A python forced alignment package"
-readme = "README.md"
+readme = "readme.md"
 authors = [
   { name = "Prad Kadambi", email = "pkadambi@asu.edu" },
 ]
@@ -15,7 +15,9 @@ requires-python = ">=3.10"
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
-  "Operating System :: OS Independent",
+  "Operating System :: MacOS :: MacOS 15.6.1",
+  "Operating System :: POSIX :: Linux :: Ubuntu",
+  "Operating System :: Microsoft :: Windows :: Windows 11",
 ]
 
 dependencies = [
@@ -36,6 +38,7 @@ dependencies = [
 [project.optional-dependencies]
 train = [
     "datasets>=4.0.0",
+    "accelerate>=0.26.0",
 ]
 
 [project.scripts]

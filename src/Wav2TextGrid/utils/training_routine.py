@@ -74,6 +74,7 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         print('No eval dataset found, no baseline alignments to write')
 
     eval_strategy = 'steps' if eval_dataset else 'no'
+    
     warmup_steps = int(len(train_dataset)/2) if len(train_dataset)/64<600 else 300
     
     use_fp16 = torch.cuda.is_available()
@@ -85,7 +86,7 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         per_device_train_batch_size=8,
         per_device_eval_batch_size=8,
         gradient_accumulation_steps=8,
-        evaluation_strategy=eval_strategy,
+        eval_strategy=eval_strategy,
         num_train_epochs=args.NTRAIN_EPOCHS,
         fp16=use_fp16,
         save_strategy='no',
