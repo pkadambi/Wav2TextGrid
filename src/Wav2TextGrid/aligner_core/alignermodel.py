@@ -251,5 +251,3 @@ class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):
 #         return CausalLMOutput(
 #             loss=loss, logits=logits, hidden_states=outputs.hidden_states, attentions=outputs.attentions
 #         )
-
-
