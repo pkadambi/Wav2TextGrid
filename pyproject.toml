@@ -1,9 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "wav2textgrid"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+name = "Wav2TextGrid"
+version = "0.1.2"
+description = "A python forced alignment package"
+readme = "readme.md"
+authors = [
+  { name = "Prad Kadambi", email = "pkadambi@asu.edu" },
+]
+license = { text = "MIT" }
 requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS :: MacOS 15.6.1",
+  "Operating System :: POSIX :: Linux :: Ubuntu",
+  "Operating System :: Microsoft :: Windows :: Windows 11",
+]
+
 dependencies = [
     "argparse>=1.4.0",
     "g2p-en>=2.1.0",
@@ -22,4 +38,12 @@ dependencies = [
 [project.optional-dependencies]
 train = [
     "datasets>=4.0.0",
+    "accelerate>=0.26.0",
 ]
+
+[project.scripts]
+w2tg = "Wav2TextGrid.wav2textgrid:main"
+w2tg_train = "Wav2TextGrid.wav2textgrid_train:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,12 +1,13 @@
 ### Wav2TextGrid
 --- 
 
-*Version 0.1.2 (Beta)* — A phonetic forced aligner
+[![Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Wav2TextGrid-blue)](https://huggingface.co/pkadambi/wav2textgrid)
 
-Wav2TextGrid has been tested on Ubuntu 18.04, Ubuntu 22.04, and Windows 11.
+*Version 0.1.2 (Beta)* — A phonetic forced aligner 
+
+Wav2TextGrid has been tested on Ubuntu 18.04, Ubuntu 22.04, Windows 11, and macOS 15.6.1
 
 ⚠️ This aligner is currently in development. If you encounter issues, please open an issue or email me directly: pkadambi@asu.edu
-
 
 # 🚀 Installation + Quick Start
 

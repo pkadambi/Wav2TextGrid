@@ -12,4 +12,6 @@ Wav2TextGrid/data
 Wav2TextGrid/Wav2TextGridResults
 data/
 RESULTS/
+.venv/
 test/
+
