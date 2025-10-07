@@ -87,7 +87,9 @@ class CharsiuPreprocessor:
         if type(audio) == str:
             if sr == 16000:
                 features, fs = sf.read(audio)
-                assert fs == 16000
+                # Resample to 16000 Hz if the sample rate is different
+                if fs != 16000:
+                    features = librosa.core.resample(features, orig_sr=fs, target_sr=16000)
             else:
                 features, _ = librosa.core.load(audio, sr=sr)
         elif isinstance(audio, np.ndarray):

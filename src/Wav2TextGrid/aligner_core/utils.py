@@ -68,7 +68,7 @@ def duration2textgrid(duration_seq, save_path=None):
     phoneTier = textgrid.IntervalTier('phones', duration_seq, 0, duration_seq[-1][1])
     tg.addTier(phoneTier)
     if save_path:
-        tg.save(save_path, format="short_textgrid", includeBlankSpaces=False)
+        tg.save(save_path, format="long_textgrid", includeBlankSpaces=False)
     return tg
 
 
@@ -101,7 +101,7 @@ def word2textgrid(duration_seq, word_seq, save_path=None):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         # saves the textgrids in the corresponding directory/subdirectory
-        tg.save(save_path, format="short_textgrid", includeBlankSpaces=False)
+        tg.save(save_path, format="long_textgrid", includeBlankSpaces=False)
     return tg
 
 
