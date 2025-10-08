@@ -8,7 +8,7 @@ import torch
 import tqdm
 from datasets import Dataset, DatasetDict
 from transformers import Wav2Vec2ForCTC
-
+from typing import Optional
 from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 
@@ -42,8 +42,8 @@ class AlignerDataset(torch.utils.data.Dataset):
         phone_key: str = "phones",
         words_key: str = "words",
         adaptation_type: str = "xvec",
-        satvector_path: str = None,
-        model: Wav2Vec2ForCTC = None,
+        satvector_path: 'Optional[str]' = None,
+        model: 'Optional[Wav2Vec2ForCTC]' = None,
     ):
 
         self.audio_paths = audio_paths
@@ -133,6 +133,7 @@ class AlignerDataset(torch.utils.data.Dataset):
     def extract_text_transcript(self, path):
         # Use os.path.splitext to handle file extensions
         import os
+
 
         transcript_path = os.path.splitext(path)[0] + ".lab"
 

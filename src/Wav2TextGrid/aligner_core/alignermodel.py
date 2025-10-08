@@ -106,7 +106,6 @@ def _init_ivec_head_from_lm_head(self):
         self.lm_head_ivec.bias[: b.size(0)].copy_(b)
 
 
-@classmethod
 def from_pretrained(cls, *args, **kwargs):
     model = super().from_pretrained(*args, **kwargs)
     model._init_ivec_head_from_lm_head()
@@ -172,3 +171,4 @@ class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):
 #
 # class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
 #     pass # Removed (not used in code) --- IGNORE ---
+

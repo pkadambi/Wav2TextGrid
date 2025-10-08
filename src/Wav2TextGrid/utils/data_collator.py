@@ -60,4 +60,5 @@ class DataCollatorClassificationWithPadding:
 
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
         batch["labels"] = labels
-        return batch
+        # Ensure batch is Dict[str, torch.Tensor]
+        return dict(batch)
