@@ -6,8 +6,10 @@ MIT license
 """
 
 from itertools import groupby
-import torch
+
 import numpy as np
+import torch
+
 from .alignermodel import Wav2Vec2ForFrameClassification, Wav2Vec2ForFrameClassificationSAT
 from .processors import CharsiuPreprocessor_en
 from .utils import duration2textgrid, forced_align, seq2duration, word2textgrid

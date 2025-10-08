@@ -171,4 +171,3 @@ class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):
 #
 # class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
 #     pass # Removed (not used in code) --- IGNORE ---
-

@@ -1,6 +1,7 @@
 import os
 import pickle as pkl
 import platform
+from typing import Optional
 
 import librosa
 import numpy as np
@@ -8,7 +9,7 @@ import torch
 import tqdm
 from datasets import Dataset, DatasetDict
 from transformers import Wav2Vec2ForCTC
-from typing import Optional
+
 from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 
@@ -42,8 +43,8 @@ class AlignerDataset(torch.utils.data.Dataset):
         phone_key: str = "phones",
         words_key: str = "words",
         adaptation_type: str = "xvec",
-        satvector_path: 'Optional[str]' = None,
-        model: 'Optional[Wav2Vec2ForCTC]' = None,
+        satvector_path: "Optional[str]" = None,
+        model: "Optional[Wav2Vec2ForCTC]" = None,
     ):
 
         self.audio_paths = audio_paths
@@ -80,9 +81,7 @@ class AlignerDataset(torch.utils.data.Dataset):
             try:
                 self.satvectors = [self.satvector_dict[pth] for pth in self.audio_paths]
             except Exception:
-                print(
-                    "No files in previously speaker adaptation vectors... extracting again..."
-                )
+                print("No files in previously speaker adaptation vectors... extracting again...")
                 xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
                 self.satvector_dict = get_satvector_dict(
                     audio_paths=audio_paths, adaptation_type=adaptation_type, xvextractor=xvx
@@ -133,7 +132,6 @@ class AlignerDataset(torch.utils.data.Dataset):
     def extract_text_transcript(self, path):
         # Use os.path.splitext to handle file extensions
         import os
-
 
         transcript_path = os.path.splitext(path)[0] + ".lab"
 

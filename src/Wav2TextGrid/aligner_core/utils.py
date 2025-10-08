@@ -221,7 +221,7 @@ def get_filename_with_upper_dirs(path, num_upper_dirs):
     """
     path = Path(path)
     # Get the desired upper directories
-    upper_dirs = path.parts[-(num_upper_dirs + 1): -1]
+    upper_dirs = path.parts[-(num_upper_dirs + 1) : -1]
     # Join the upper directories and the filename
     filename_with_upper_dirs = "/".join(upper_dirs + (path.name,))
 
@@ -237,18 +237,12 @@ def get_matching_file_in_list(file_match_str: str, file_paths_to_search, verbose
     corresponding_files = [file for file in file_paths_to_search if filestem in file]
     if len(corresponding_files) > 1:
         if verbose:
-            print(
-                f"Error found more than one matching file: {file_match_str}"
-            )
-        raise Exception(
-            f"Error found more than one matching file: {file_match_str}"
-        )
+            print(f"Error found more than one matching file: {file_match_str}")
+        raise Exception(f"Error found more than one matching file: {file_match_str}")
 
     elif len(corresponding_files) == 0:
         if verbose:
-            print(
-                f"Error did not find any matching files: {file_match_str}"
-            )
+            print(f"Error did not find any matching files: {file_match_str}")
         raise Exception("Error did not find any matching files in file_paths_to_search")
 
     else:
