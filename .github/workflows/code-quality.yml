@@ -30,10 +30,8 @@ jobs:
     - name: Check import sorting with isort
       run: isort --check-only src/
     
-    # - name: Lint with flake8
-    #   run: flake8 src/ --max-line-length=100
-    # TODO: Fix flake8 issues before enabling this step
+    - name: Lint with flake8
+      run: flake8 src/ --max-line-length=100
 
-    # - name: Type checking with mypy
-    #   run: mypy src/ --ignore-missing-imports
-    # TODO: Fix mypy issues before enabling this step
+    - name: Type checking with mypy
+      run: mypy src/ --ignore-missing-imports
