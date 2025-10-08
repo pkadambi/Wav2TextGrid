@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "Wav2TextGrid"
 version = "0.1.2"
 description = "A python forced alignment package"
-readme = "readme.md"
+readme = "README.md"
 authors = [
   { name = "Prad Kadambi", email = "pkadambi@asu.edu" },
 ]
