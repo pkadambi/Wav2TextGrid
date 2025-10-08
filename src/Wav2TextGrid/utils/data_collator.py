@@ -26,7 +26,9 @@ class DataCollatorClassificationWithPadding:
         self.pad_to_multiple_of = pad_to_multiple_of
         self.pad_to_multiple_of_labels = pad_to_multiple_of_labels
 
-    def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
+    def __call__(
+        self, features: List[Dict[str, Union[List[int], torch.Tensor]]]
+    ) -> Dict[str, torch.Tensor]:
         if self.args.SAT_METHOD is not None:
             input_features = [
                 {"input_values": f["input_values"], "ixvector": f["ixvector"]} for f in features
