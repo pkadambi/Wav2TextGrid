@@ -1,17 +1,26 @@
+# IDE and environment
 .idea
+.venv/
+
+# Python cache and egg-info
 *__pycache__*
-pretrained_models*
-*examples*
 Wav2TextGrid.egg-info*
-/dist/
-*test_data*
-/test_results
-*ipynb*
+
+# Model and checkpoints
+pretrained_models*
 *checkpoints*
+
+# Data and results
 Wav2TextGrid/data
 Wav2TextGrid/Wav2TextGridResults
 data/
 RESULTS/
-.venv/
+/dist/
+/test_results
+
+# Examples, notebooks, and tests
+*examples*
+*ipynb*
+*test_data*
 test/
 
