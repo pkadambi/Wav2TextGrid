@@ -1,31 +1,31 @@
-'''
+"""
 The code in this file has been adapted from:
 https://github.com/lingjzhu/charsiu
 Authors: lingjzhu, pkadambi
 MIT license
-'''
+"""
 
-import sys
-import torch
 from itertools import groupby
 
-sys.path.append('src/')
 import numpy as np
-# sys.path.insert(0,'src')
-from .alignermodel import Wav2Vec2ForFrameClassificationSAT, Wav2Vec2ForFrameClassification
-from .utils import seq2duration, forced_align, duration2textgrid, word2textgrid
+import torch
+
+from .alignermodel import Wav2Vec2ForFrameClassification, Wav2Vec2ForFrameClassificationSAT
 from .processors import CharsiuPreprocessor_en
+from .utils import duration2textgrid, forced_align, seq2duration, word2textgrid
 
 
 class base_aligner:
 
-    def __init__(self,
-                 lang='en',
-                 sampling_rate=16000,
-                 device=None,
-                 recognizer=None,
-                 processor=None,
-                 resolution=0.01):
+    def __init__(
+        self,
+        lang="en",
+        sampling_rate=16000,
+        device=None,
+        recognizer=None,
+        processor=None,
+        resolution=0.01,
+    ):
 
         self.lang = lang
 
@@ -41,7 +41,7 @@ class base_aligner:
         self.recognizer = recognizer
 
         if device is None:
-            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
         else:
             self.device = device
 
@@ -54,11 +54,11 @@ class base_aligner:
         print("WHAT?")
         raise NotImplementedError()
 
-    def serve(self, audio, save_to, output_format='variable', text=None):
+    def serve(self, audio, save_to, output_format="variable", text=None):
         raise NotImplementedError()
 
     def _to_textgrid(self, phones, save_to):
-        '''
+        """
         Convert output tuples to a textgrid file
 
         Parameters
@@ -70,12 +70,12 @@ class base_aligner:
         -------
         None.
 
-        '''
+        """
         duration2textgrid(phones, save_path=save_to)
         # print('Alignment output has been saved to %s' % (save_to))
 
     def _to_tsv(self, phones, save_to):
-        '''
+        """
         Convert output tuples to a tab-separated file
 
         Parameters
@@ -87,22 +87,24 @@ class base_aligner:
         -------
         None.
 
-        '''
-        with open(save_to, 'w') as f:
+        """
+        with open(save_to, "w") as f:
             for start, end, phone in phones:
-                f.write('%s\t%s\t%s\n' % (start, end, phone))
+                f.write("%s\t%s\t%s\n" % (start, end, phone))
         # print('Alignment output has been saved to %s' % (save_to))
 
 
 class xVecSAT_forced_aligner(base_aligner):
     def __init__(self, aligner, satvector_size, sil_threshold=4, **kwargs):
         super(xVecSAT_forced_aligner, self).__init__(**kwargs)
-        self.aligner = Wav2Vec2ForFrameClassificationSAT.from_pretrained(aligner, satvector_size=satvector_size)
+        self.aligner = Wav2Vec2ForFrameClassificationSAT.from_pretrained(
+            aligner, satvector_size=satvector_size
+        )
         self.sil_threshold = sil_threshold
         self._freeze_model()
 
     def align(self, audio, text, ixvector, target_phones=None, return_logits=False, TEMPERATURE=1):
-        '''
+        """
         Perform forced alignment
 
         Parameters
@@ -116,7 +118,7 @@ class xVecSAT_forced_aligner(base_aligner):
         -------
         A tuple of aligned phones in the form (start_time, end_time, phone)
 
-        '''
+        """
         audio = self.base_processor.audio_preprocess(audio, sr=self.sr)
         audio = torch.Tensor(audio).unsqueeze(0).to(self.device)
         phones, words = self.base_processor.get_phones_and_words(text)
@@ -124,16 +126,16 @@ class xVecSAT_forced_aligner(base_aligner):
         if target_phones is not None:
             try:
                 if not (np.array(phones) == np.array(target_phones)).all():
-                    print('target')
+                    print("target")
                     print(target_phones)
-                    print('g2p')
+                    print("g2p")
                     print(phones)
-            except:
-                print('text')
+            except Exception:
+                print("text")
                 print(text)
-                print('target')
+                print("target")
                 print(target_phones)
-                print('g2p')
+                print("g2p")
                 phnsg2p = [item for t in phones for item in t]
                 print(phnsg2p)
             phones = target_phones
@@ -152,7 +154,9 @@ class xVecSAT_forced_aligner(base_aligner):
 
         aligned_phone_ids = forced_align(cost[nonsil_idx, :], phone_ids[1:-1])
 
-        aligned_phones = [self.base_processor.mapping_id2phone(phone_ids[1:-1][i]) for i in aligned_phone_ids]
+        aligned_phones = [
+            self.base_processor.mapping_id2phone(phone_ids[1:-1][i]) for i in aligned_phone_ids
+        ]
 
         pred_phones = self._merge_silence(aligned_phones, sil_mask)
 
@@ -162,8 +166,17 @@ class xVecSAT_forced_aligner(base_aligner):
 
         return pred_phones, pred_words
 
-    def serve(self, audio, text, ixvector, save_to, target_phones=None, output_format='textgrid', verbose=False):
-        '''
+    def serve(
+        self,
+        audio,
+        text,
+        ixvector,
+        save_to,
+        target_phones=None,
+        output_format="textgrid",
+        verbose=False,
+    ):
+        """
          A wrapper function for quick inference
 
         Parameters
@@ -180,27 +193,27 @@ class xVecSAT_forced_aligner(base_aligner):
         -------
         None.
 
-        '''
+        """
         phones, words = self.align(audio, text, ixvector, target_phones=target_phones)
 
-        if output_format == 'tsv':
-            if save_to.endswith('.tsv'):
-                save_to_phone = save_to.replace('.tsv', '_phone.tsv')
-                save_to_word = save_to.replace('.tsv', '_word.tsv')
+        if output_format == "tsv":
+            if save_to.endswith(".tsv"):
+                save_to_phone = save_to.replace(".tsv", "_phone.tsv")
+                save_to_word = save_to.replace(".tsv", "_word.tsv")
             else:
-                save_to_phone = save_to + '_phone.tsv'
-                save_to_word = save_to + '_word.tsv'
+                save_to_phone = save_to + "_phone.tsv"
+                save_to_word = save_to + "_word.tsv"
 
             self._to_tsv(phones, save_to_phone)
             self._to_tsv(words, save_to_word)
 
-        elif output_format == 'textgrid':
+        elif output_format == "textgrid":
             self._to_textgrid(phones, words, save_to)
         else:
-            raise Exception('Please specify the correct output format (tsv or textgrid)!')
+            raise Exception("Please specify the correct output format (tsv or textgrid)!")
 
     def _to_textgrid(self, phones, words, save_to):
-        '''
+        """
         Convert output tuples to a textgrid file
 
         Parameters
@@ -212,7 +225,7 @@ class xVecSAT_forced_aligner(base_aligner):
         -------
         None.
 
-        '''
+        """
         word2textgrid(phones, words, save_path=save_to)
         # print('Alignment output has been saved to %s'%(save_to))
 
@@ -223,7 +236,7 @@ class xVecSAT_forced_aligner(base_aligner):
         sil_mask = []
         for key, group in groupby(preds):
             group = list(group)
-            if (key == self.base_processor.sil_idx and len(group) < self.sil_threshold):
+            if key == self.base_processor.sil_idx and len(group) < self.sil_threshold:
                 sil_mask += [-1 for i in range(len(group))]
             else:
                 sil_mask += group
@@ -236,7 +249,7 @@ class xVecSAT_forced_aligner(base_aligner):
         count = 0
         for i in sil_mask:
             if i == self.base_processor.sil_idx:
-                pred_phones.append('[SIL]')
+                pred_phones.append("[SIL]")
             else:
                 pred_phones.append(aligned_phones[count])
                 count += 1
@@ -254,7 +267,7 @@ class charsiu_forced_aligner(base_aligner):
         self._freeze_model()
 
     def align(self, audio, text, target_phones=None, return_logits=False, TEMPERATURE=1):
-        '''
+        """
         Perform forced alignment
 
         Parameters
@@ -268,7 +281,7 @@ class charsiu_forced_aligner(base_aligner):
         -------
         A tuple of aligned phones in the form (start_time, end_time, phone)
 
-        '''
+        """
         audio = self.charsiu_processor.audio_preprocess(audio, sr=self.sr)
         audio = torch.Tensor(audio).unsqueeze(0).to(self.device)
         phones, words = self.charsiu_processor.get_phones_and_words(text)
@@ -290,7 +303,9 @@ class charsiu_forced_aligner(base_aligner):
 
         aligned_phone_ids = forced_align(cost[nonsil_idx, :], phone_ids[1:-1])
 
-        aligned_phones = [self.charsiu_processor.mapping_id2phone(phone_ids[1:-1][i]) for i in aligned_phone_ids]
+        aligned_phones = [
+            self.charsiu_processor.mapping_id2phone(phone_ids[1:-1][i]) for i in aligned_phone_ids
+        ]
 
         pred_phones = self._merge_silence(aligned_phones, sil_mask)
 
@@ -302,8 +317,8 @@ class charsiu_forced_aligner(base_aligner):
         else:
             return pred_phones, pred_words
 
-    def serve(self, audio, text, save_to, target_phones=None, output_format='textgrid'):
-        '''
+    def serve(self, audio, text, save_to, target_phones=None, output_format="textgrid"):
+        """
          A wrapper function for quick inference
 
         Parameters
@@ -320,27 +335,27 @@ class charsiu_forced_aligner(base_aligner):
         -------
         None.
 
-        '''
+        """
         phones, words = self.align(audio, text, target_phones=target_phones)
 
-        if output_format == 'tsv':
-            if save_to.endswith('.tsv'):
-                save_to_phone = save_to.replace('.tsv', '_phone.tsv')
-                save_to_word = save_to.replace('.tsv', '_word.tsv')
+        if output_format == "tsv":
+            if save_to.endswith(".tsv"):
+                save_to_phone = save_to.replace(".tsv", "_phone.tsv")
+                save_to_word = save_to.replace(".tsv", "_word.tsv")
             else:
-                save_to_phone = save_to + '_phone.tsv'
-                save_to_word = save_to + '_word.tsv'
+                save_to_phone = save_to + "_phone.tsv"
+                save_to_word = save_to + "_word.tsv"
 
             self._to_tsv(phones, save_to_phone)
             self._to_tsv(words, save_to_word)
 
-        elif output_format == 'textgrid':
+        elif output_format == "textgrid":
             self._to_textgrid(phones, words, save_to)
         else:
-            raise Exception('Please specify the correct output format (tsv or textgird)!')
+            raise Exception("Please specify the correct output format (tsv or textgird)!")
 
     def _to_textgrid(self, phones, words, save_to):
-        '''
+        """
         Convert output tuples to a textgrid file
 
         Parameters
@@ -352,7 +367,7 @@ class charsiu_forced_aligner(base_aligner):
         -------
         None.
 
-        '''
+        """
         word2textgrid(phones, words, save_path=save_to)
         # print('Alignment output has been saved to %s'%(save_to))
 
@@ -362,7 +377,7 @@ class charsiu_forced_aligner(base_aligner):
         count = 0
         for i in sil_mask:
             if i == self.charsiu_processor.sil_idx:
-                pred_phones.append('[SIL]')
+                pred_phones.append("[SIL]")
             else:
                 pred_phones.append(aligned_phones[count])
                 count += 1
@@ -376,13 +391,9 @@ class charsiu_forced_aligner(base_aligner):
         sil_mask = []
         for key, group in groupby(preds):
             group = list(group)
-            if (key == self.charsiu_processor.sil_idx and len(group) < self.sil_threshold):
+            if key == self.charsiu_processor.sil_idx and len(group) < self.sil_threshold:
                 sil_mask += [-1 for i in range(len(group))]
             else:
                 sil_mask += group
 
         return np.array(sil_mask)
-
-
-
-
