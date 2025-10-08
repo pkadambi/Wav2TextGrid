@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import tqdm
 from datasets import Dataset, DatasetDict
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+from transformers import Wav2Vec2ForCTC
 
 from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
@@ -56,7 +56,9 @@ class AlignerDataset(torch.utils.data.Dataset):
             satvector_path is None and adaptation_type is not None
         ):
             raise Exception(
-                f"Error: both both satvector_path and adaptation_type must be specified. Only one cannot be specified. Found {satvector_path} for satvector_path and {adaptation_type} for adaptation_type."
+                f"Error: both both satvector_path and adaptation_type must be specified."
+                f"Only one cannot be specified. Found {satvector_path}"
+                f"for satvector_path and {adaptation_type} for adaptation_type."
             )
 
         if (
@@ -77,9 +79,9 @@ class AlignerDataset(torch.utils.data.Dataset):
 
             try:
                 self.satvectors = [self.satvector_dict[pth] for pth in self.audio_paths]
-            except:
+            except Exception:
                 print(
-                    "Did not find expected files in previously speaker adaptation vectors... extracting again..."
+                    "No files in previously speaker adaptation vectors... extracting again..."
                 )
                 xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
                 self.satvector_dict = get_satvector_dict(
@@ -160,21 +162,12 @@ class AlignerDataset(torch.utils.data.Dataset):
     def extract_phone_words_bounds(self):
         phone_alignments = []
         word_alignments = []
-        frame_phone_lables = []
-        frame_phone_times = []
+        # frame_phone_lables = []
+        # frame_phone_times = []
         phones = []
         for ii, (_path, _tgpath) in enumerate(
             tqdm.tqdm(zip(self.audio_paths, self.textgrid_paths))
         ):
-            # _tgpath = _path[:-3] + 'TextGrid'
-            # tgfilename = _path.split('/')[-1][:-3] + 'TextGrid'
-            # splitpath = _path.split('/')[:5]
-            # speaker_dir = _path.split('/')[-2]
-            # splitpath.append('manually-aligned-text-grids')
-            # splitpath.append(speaker_dir)
-            # splitpath.append(tgfilename)
-            # manual_tg_path = '/'.join(splitpath)
-            # manual_tg_path = _path.replace('child_speech_16_khz', 'manually-aligned-text-grids').replace('.wav', '.TextGrid')
             manual_tg_path = _tgpath
             phone_df = textgridpath_to_phonedf(
                 manual_tg_path, phone_key=self.phone_key, remove_numbers=True
@@ -224,10 +217,10 @@ class AlignerDataset(torch.utils.data.Dataset):
 
                 if len(phone_ind) == 0:
                     _phn = "[SIL]"
-                    # np.concatenate([np.array(phn_dict['start']).reshape(-1, 1), np.array(phn_dict['stop']).reshape(-1, 1), np.array(phn_dict['utterance']).reshape(-1, 1)], axis=1)
                 elif len(phone_ind) > 1:
                     Exception(
-                        "Error found more than 1 matching phone index!\n Manual Transcript dictionary:\n",
+                        "Error found more than 1 matching phone index!"
+                        "Manual Transcript dictionary:\n",
                         phn_dict,
                     )
                 else:
@@ -239,7 +232,6 @@ class AlignerDataset(torch.utils.data.Dataset):
             _audiolen = len(self.audios[ii]) / 16000
 
             if self.model is not None:
-                # _audiolen = get_aligner_frame_seq_len_model_processor(audio_filepath=_path, model=self.model, processor=self.processor)
                 audiolen_samples = len(librosa.load(_path, sr=16000)[0])
                 n_timesteps = int(self.model._get_feat_extract_output_lengths(audiolen_samples))
                 timesteps = np.arange(0, n_timesteps) * w2v2_time_step
@@ -251,8 +243,6 @@ class AlignerDataset(torch.utils.data.Dataset):
 
             frame_times.append(timesteps)
             frame_phn_labels.append(_find_framewise_phn_labels(timesteps, _phn_dct))
-
-            # phone_df = textgridpath_to_phonedf(manual_tg_path, phone_key='ha phones', remove_numbers=True)
 
         return frame_phn_labels, frame_times
 

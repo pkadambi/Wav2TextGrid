@@ -41,14 +41,14 @@ def write_textgrid_alignments_for_dataset(aligner, dataset, output_dir):
                 )
             else:
                 aligner.serve(audio=audiofile, text=transcripts[ii], save_to=output_path)
-        except:
+        except Exception:
             print("Error aligning:", audiofile)
             try:
                 aligner.serve(
                     audio=audiofile, text=transcripts[ii], save_to=output_path, ixvector=vec
                 )
-            except:
-                print("Asdf")
+            except Exception:
+                print("TODO add error handling here")
 
         print(f"Aligning {ii+1}/{len(audiofiles)}...", end="\r")
         time.sleep(0.02)

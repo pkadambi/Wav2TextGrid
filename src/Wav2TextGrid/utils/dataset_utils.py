@@ -5,7 +5,6 @@ from datasets import load_from_disk
 
 from Wav2TextGrid.aligner_core.alignermodel import (
     Wav2Vec2ForFrameClassification,
-    Wav2Vec2ForFrameClassificationSAT,
 )
 from Wav2TextGrid.aligner_core.utils import (
     get_all_filetype_in_dir,
@@ -37,12 +36,12 @@ def match_audio_textgrids(audio_files, textgrid_dir, allow_empty=False):
             if skipped_count <= 5:
                 print(f"\nWarning: Skipping {os.path.basename(audio)} - no matching TextGrid")
             elif skipped_count == 6:
-                print(f"\n... (suppressing further individual warnings)")
+                print("\n... (suppressing further individual warnings)")
             continue
 
     # Summary statistics
     success_rate = len(matched_audio) / len(audio_files) * 100 if audio_files else 0
-    print(f"\n✅ Dataset Matching Summary:")
+    print("\n✅ Dataset Matching Summary:")
     print(f"   • Successfully matched: {len(matched_audio)} pairs")
     print(f"   • Skipped (no TextGrid): {skipped_count} files")
     print(f"   • Success rate: {success_rate:.1f}%")
@@ -56,7 +55,7 @@ def match_audio_textgrids(audio_files, textgrid_dir, allow_empty=False):
 
 
 def prepare_framewise_dataset(batch, mapping, unk_method="ignore"):
-    phoneset = list(mapping.keys())
+    # phoneset = list(mapping.keys())
     batch["input_values"] = batch["audio"]
     batch["frame_phones"] = [phone.upper() for phone in batch["frame_phones"]]
 

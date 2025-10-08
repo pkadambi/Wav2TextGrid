@@ -85,7 +85,7 @@ class CharsiuPreprocessor:
             A list of audio sample as an one dimensional torch tensor
 
         """
-        if type(audio) == str:
+        if type(audio) is str:
             if sr == 16000:
                 features, fs = sf.read(audio)
                 # Resample to 16000 Hz if the sample rate is different
@@ -224,7 +224,7 @@ class CharsiuPreprocessor_en(CharsiuPreprocessor):
             if unicodedata.category(char) != "Mn"
         )  # Strip accents
         text = text.lower()
-        text = re.sub("[^ a-z'.,?!\-]", "", text)
+        text = re.sub(r"[^ a-z'.,?!\-]", "", text)
         text = text.replace("i.e.", "that is")
         text = text.replace("e.g.", "for example")
 

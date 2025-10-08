@@ -36,7 +36,6 @@ class xVecExtractor:
             )
         signal = signal.to(self.device)
 
-        # assert fs==target_sample_rate, 'ERROR: Samples must have 16kHz sampling rate, try running again with --downsample flag'
         try:
             vadout = self.VAD.get_speech_segments(
                 filename, large_chunk_size=1.5, small_chunk_size=0.5
@@ -56,9 +55,10 @@ class xVecExtractor:
                 # print(f'Warning VAD found no active speech segments for {filename}')
 
             vadsig = signal[0][start:end]
-        except:
+        except Exception:
             print(
-                f"Warning VAD internal failure for {filename}. Calculating x-vector with full utterance"
+                f"Warning VAD internal failure for {filename}."
+                "Calculating x-vector with full utterance"
             )
             vadsig = signal[0]
 

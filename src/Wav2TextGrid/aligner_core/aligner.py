@@ -5,15 +5,9 @@ Authors: lingjzhu, pkadambi
 MIT license
 """
 
-import sys
 from itertools import groupby
-
 import torch
-
-sys.path.append("src/")
 import numpy as np
-
-# sys.path.insert(0,'src')
 from .alignermodel import Wav2Vec2ForFrameClassification, Wav2Vec2ForFrameClassificationSAT
 from .processors import CharsiuPreprocessor_en
 from .utils import duration2textgrid, forced_align, seq2duration, word2textgrid
@@ -134,7 +128,7 @@ class xVecSAT_forced_aligner(base_aligner):
                     print(target_phones)
                     print("g2p")
                     print(phones)
-            except:
+            except Exception:
                 print("text")
                 print(text)
                 print("target")
