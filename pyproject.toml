@@ -40,6 +40,13 @@ train = [
     "datasets>=4.0.0",
     "accelerate>=0.26.0",
 ]
+code_quality = [
+    "black",
+    "isort",
+    "flake8",
+    "mypy",
+    "pylint",
+]
 
 [project.scripts]
 w2tg = "Wav2TextGrid.wav2textgrid:main"
@@ -47,3 +54,57 @@ w2tg_train = "Wav2TextGrid.wav2textgrid_train:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.flake8]
+max-line-length = 100
+exclude = [
+    ".venv",
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".pytest_cache",
+    ".mypy_cache",
+    "notebooks/.ipynb_checkpoints"
+]
+ignore = [
+    "E203",  # whitespace before ':'
+    "W503",  # line break before binary operator
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+exclude = '''
+/(
+    \.venv
+  | \.git
+  | \.pytest_cache
+  | \.mypy_cache
+  | __pycache__
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    ".venv",
+    "build",
+    "dist",
+]

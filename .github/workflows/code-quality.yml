@@ -1,0 +1,39 @@
+name: Code Quality
+
+on:
+  push:
+    paths:
+      - 'src/**'
+  pull_request:
+    paths:
+      - 'src/**'
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install linting tools
+      run: |
+        pip install -e '.[code_quality]'
+    
+    - name: Check code formatting with Black
+      run: black --check src/
+    
+    - name: Check import sorting with isort
+      run: isort --check-only src/
+    
+    # - name: Lint with flake8
+    #   run: flake8 src/ --max-line-length=100
+    # TODO: Fix flake8 issues before enabling this step
+
+    # - name: Type checking with mypy
+    #   run: mypy src/ --ignore-missing-imports
+    # TODO: Fix mypy issues before enabling this step
