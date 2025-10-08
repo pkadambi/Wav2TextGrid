@@ -1,14 +1,16 @@
-import torch
 import os
-import tqdm
+import pickle as pkl
+import platform
+
 import librosa
 import numpy as np
-import pickle as pkl
+import torch
+import tqdm
 from datasets import Dataset, DatasetDict
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
-from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
+
 from Wav2TextGrid.aligner_core.utils import textgridpath_to_phonedf
-import platform
+from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 
 PLATFORM = platform.system()
 

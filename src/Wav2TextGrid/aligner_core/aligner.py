@@ -6,16 +6,17 @@ MIT license
 """
 
 import sys
-import torch
 from itertools import groupby
+
+import torch
 
 sys.path.append("src/")
 import numpy as np
 
 # sys.path.insert(0,'src')
-from .alignermodel import Wav2Vec2ForFrameClassificationSAT, Wav2Vec2ForFrameClassification
-from .utils import seq2duration, forced_align, duration2textgrid, word2textgrid
+from .alignermodel import Wav2Vec2ForFrameClassification, Wav2Vec2ForFrameClassificationSAT
 from .processors import CharsiuPreprocessor_en
+from .utils import duration2textgrid, forced_align, seq2duration, word2textgrid
 
 
 class base_aligner:

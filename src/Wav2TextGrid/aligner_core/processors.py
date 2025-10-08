@@ -6,16 +6,16 @@ MIT license
 """
 
 import re
-import numpy as np
-from itertools import groupby, chain
-import soundfile as sf
-import librosa.core
 import unicodedata
 from builtins import str as unicode
-from nltk.tokenize import TweetTokenizer
+from itertools import chain, groupby
 
+import librosa.core
+import numpy as np
+import soundfile as sf
 from g2p_en import G2p
 from g2p_en.expand import normalize_numbers
+from nltk.tokenize import TweetTokenizer
 from transformers import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor
 
 word_tokenize = TweetTokenizer().tokenize

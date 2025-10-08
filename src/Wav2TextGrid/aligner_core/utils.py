@@ -5,17 +5,17 @@ Primary Author: lingjzhu, henrynomeland
 MIT license
 """
 
-import numpy as np
-import re
 import os
-from praatio import textgrid
-from praatio.data_classes.textgrid import Textgrid
+import platform
+import re
 from itertools import groupby
-from librosa.sequence import dtw
-import pandas as pd
 from pathlib import Path
 
-import platform
+import numpy as np
+import pandas as pd
+from librosa.sequence import dtw
+from praatio import textgrid
+from praatio.data_classes.textgrid import Textgrid
 
 PLATFORM = platform.system()
 

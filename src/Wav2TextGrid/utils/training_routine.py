@@ -1,12 +1,14 @@
 import os
+
 import numpy as np
 import torch
 from transformers import Trainer, TrainingArguments
+
+from Wav2TextGrid.aligner_core.aligner import charsiu_forced_aligner, xVecSAT_forced_aligner
 from Wav2TextGrid.aligner_core.alignermodel import (
-    Wav2Vec2ForFrameClassificationSAT,
     Wav2Vec2ForFrameClassification,
+    Wav2Vec2ForFrameClassificationSAT,
 )
-from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner, charsiu_forced_aligner
 from Wav2TextGrid.aligner_core.utils import get_filename_with_upper_dirs
 
 

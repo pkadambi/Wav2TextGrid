@@ -1,8 +1,8 @@
+import librosa
+import torch
 import torchaudio
 from speechbrain.inference.speaker import EncoderClassifier
 from speechbrain.inference.VAD import VAD
-import torch
-import librosa
 
 
 class xVecExtractor:

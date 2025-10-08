@@ -1,16 +1,17 @@
 # File: utils/dataset_utils.py
 import os
+
 from datasets import load_from_disk
+
+from Wav2TextGrid.aligner_core.alignermodel import (
+    Wav2Vec2ForFrameClassification,
+    Wav2Vec2ForFrameClassificationSAT,
+)
 from Wav2TextGrid.aligner_core.utils import (
+    get_all_filetype_in_dir,
     get_filename_with_upper_dirs,
     get_matching_file_in_list,
-    get_all_filetype_in_dir,
 )
-from Wav2TextGrid.aligner_core.alignermodel import (
-    Wav2Vec2ForFrameClassificationSAT,
-    Wav2Vec2ForFrameClassification,
-)
-
 
 from .aligner_dataset import AlignerDataset
 

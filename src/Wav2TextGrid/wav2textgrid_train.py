@@ -14,11 +14,12 @@ if __name__ == "__main__" and __package__ is None:
 
 
 import nltk
-from Wav2TextGrid.utils.args import parse_args
-from Wav2TextGrid.utils.processor import load_processor
-from Wav2TextGrid.utils.dataset_utils import match_audio_textgrids, create_dataset
-from Wav2TextGrid.utils.training_routine import perform_train_test_split_run
+
 from Wav2TextGrid.aligner_core.utils import get_all_filetype_in_dir
+from Wav2TextGrid.utils.args import parse_args
+from Wav2TextGrid.utils.dataset_utils import create_dataset, match_audio_textgrids
+from Wav2TextGrid.utils.processor import load_processor
+from Wav2TextGrid.utils.training_routine import perform_train_test_split_run
 
 
 def main():

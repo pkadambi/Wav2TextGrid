@@ -1,7 +1,9 @@
 # File: utils/data_collator.py
-import torch
 from typing import Dict, List, Optional, Union
+
+import torch
 from transformers import Wav2Vec2Processor
+
 from ..utils.args import W2TextgridTrainerArgs
 
 

@@ -13,15 +13,17 @@ if __name__ == "__main__" and __package__ is None:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     # import Wav2TextGrid  # triggers absolute import resolution
 
-from pathlib import Path
+import argparse
 import glob
 import os
+import platform
+from pathlib import Path
+
 import torch
 from tqdm import tqdm
-from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
+
 from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner
-import argparse
-import platform
+from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 
 
 def align_file(wavfilepath, transcriptfilepath, outfilepath, target_phns=None):
