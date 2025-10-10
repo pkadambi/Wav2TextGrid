@@ -36,15 +36,15 @@ def download_nltk_data():
     try:
         # Check if the data is already available
         nltk.data.find('taggers/averaged_perceptron_tagger_eng')
-        print("✅ NLTK data already available")
+        print("NLTK data already available")
     except LookupError:
-        print("📥 Downloading required NLTK data...")
+        print("Downloading required NLTK data...")
         try:
             nltk.download('averaged_perceptron_tagger_eng', quiet=True)
             nltk.download('punkt', quiet=True)  # Often needed too
-            print("✅ NLTK data downloaded successfully")
+            print("NLTK data downloaded successfully")
         except Exception as e:
-            print(f"⚠️ Warning: Failed to download NLTK data: {e}")
+            print(f"WARNING: Failed to download NLTK data: {e}")
             print("You may need to download it manually with:")
             print(">>> import nltk; nltk.download('averaged_perceptron_tagger_eng')")
 
@@ -169,7 +169,7 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
     """
     Run the complete inference workflow
     """
-    print("🚀 Starting Wav2TextGrid inference workflow")
+    print("==> Starting Wav2TextGrid inference workflow")
     print(f"Platform: {platform.system()} {platform.release()}")
     print(f"Python: {sys.version}")
     print(f"Examples directory: {examples_dir}")
@@ -181,15 +181,15 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
     
     # Discover example pairs
     pairs = discover_example_pairs(examples_dir)
-    print(f"📁 Found {len(pairs)} wav/lab pairs:")
+    print(f"Found {len(pairs)} wav/lab pairs:")
     for wav, lab in pairs:
-        print(f"  • {os.path.basename(wav)} + {os.path.basename(lab)}")
+        print(f"  * {os.path.basename(wav)} + {os.path.basename(lab)}")
     
     if not pairs:
-        print("❌ No wav/lab pairs found!")
+        print("ERROR: No wav/lab pairs found!")
         sys.exit(1)
     
-    print("\n🔧 Initializing models...")
+    print("\nInitializing models...")
     
     # Download NLTK data if needed
     download_nltk_data()
@@ -198,12 +198,12 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
         # Initialize models
         xvx = xVecExtractor(method="xvector")
         aligner = xVecSAT_forced_aligner("pkadambi/Wav2TextGrid", satvector_size=512)
-        print("✅ Models initialized successfully")
+        print("Models initialized successfully")
     except Exception as e:
-        print(f"❌ Error initializing models: {e}")
+        print(f"ERROR: Error initializing models: {e}")
         sys.exit(1)
     
-    print("\n🎯 Running inference...")
+    print("\nRunning inference...")
     results = []
     successful_alignments = 0
     failed_alignments = 0
@@ -218,22 +218,22 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
             # Run alignment with models passed as parameters
             align_file_with_models(wav_file, lab_file, output_file, xvx, aligner)
             successful_alignments += 1
-            print(f"  ✅ Alignment successful: {output_file}")
+            print(f"  SUCCESS: Alignment successful: {output_file}")
             
             # Validate output
             validation = validate_textgrid(output_file)
             results.append(validation)
             
             if validation["errors"]:
-                print(f"  ⚠️  Validation warnings: {'; '.join(validation['errors'])}")
+                print(f"  WARNING: Validation warnings: {'; '.join(validation['errors'])}")
             else:
-                print(f"  ✅ Validation passed: {validation['num_intervals']} intervals, "
+                print(f"  PASS: Validation passed: {validation['num_intervals']} intervals, "
                       f"{validation['non_empty_intervals']} non-empty, "
                       f"{validation['total_duration']:.2f}s duration")
                 
         except Exception as e:
             failed_alignments += 1
-            print(f"  ❌ Alignment failed: {e}")
+            print(f"  ERROR: Alignment failed: {e}")
             
             # Add failed validation result
             validation = {
@@ -250,7 +250,7 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
             results.append(validation)
     
     # Generate validation report
-    print("\n📊 Generating validation report...")
+    print("\nGenerating validation report...")
     report_path = "validation_report.txt"
     with open(report_path, "w") as f:
         f.write("Wav2TextGrid Inference Validation Report\n")
@@ -275,12 +275,12 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
             f.write(f"  Duration: {result['total_duration']:.2f}s\n")
             if result['errors']:
                 f.write(f"  Errors: {'; '.join(result['errors'])}\n")
-            f.write(f"  Status: {'✅ PASS' if not result['errors'] else '❌ FAIL'}\n")
+            f.write(f"  Status: {'PASS' if not result['errors'] else 'FAIL'}\n")
     
-    print(f"📄 Validation report saved to: {report_path}")
+    print(f"Validation report saved to: {report_path}")
     
     # Summary
-    print("\n📈 Summary:")
+    print("\nSummary:")
     print(f"  Successful alignments: {successful_alignments}/{len(pairs)}")
     print(f"  Failed alignments: {failed_alignments}/{len(pairs)}")
     print(f"  Success rate: {(successful_alignments/len(pairs)*100):.1f}%")
@@ -290,13 +290,13 @@ def run_inference_workflow(examples_dir: str = "examples", output_dir: str = "ou
     print(f"  Validation rate: {(valid_outputs/len(pairs)*100):.1f}%")
     
     if failed_alignments > 0:
-        print("\n❌ Some alignments failed. Check the validation report for details.")
+        print("\nERROR: Some alignments failed. Check the validation report for details.")
         sys.exit(1)
     elif valid_outputs < len(pairs):
-        print("\n⚠️  Some outputs failed validation. Check the validation report for details.")
+        print("\nWARNING: Some outputs failed validation. Check the validation report for details.")
         sys.exit(1)
     else:
-        print("\n🎉 All alignments completed successfully and passed validation!")
+        print("\nSUCCESS: All alignments completed successfully and passed validation!")
 
 
 def main():
@@ -310,7 +310,7 @@ def main():
     
     # Ensure examples directory exists
     if not os.path.exists(args.examples_dir):
-        print(f"❌ Examples directory not found: {args.examples_dir}")
+        print(f"ERROR: Examples directory not found: {args.examples_dir}")
         sys.exit(1)
     
     run_inference_workflow(args.examples_dir, args.output_dir)
