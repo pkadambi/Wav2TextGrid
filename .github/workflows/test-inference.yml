@@ -1,0 +1,85 @@
+name: Test Wav2TextGrid Inference
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-inference:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11"]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies (Ubuntu)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg libsndfile1
+    
+    - name: Install system dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install ffmpeg
+    
+    - name: Install system dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        # FFmpeg is pre-installed on Windows runners
+        echo "Using pre-installed FFmpeg"
+    
+    - name: Install UV package manager
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+      shell: bash
+      if: runner.os != 'Windows'
+    
+    - name: Install UV package manager (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+        echo "$env:USERPROFILE\.cargo\bin" >> $env:GITHUB_PATH
+    
+    - name: Install dependencies with UV
+      run: |
+        uv sync
+      shell: bash
+    
+    - name: Download NLTK data
+      run: |
+        uv run python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng'); nltk.download('punkt')"
+      shell: bash
+    
+    - name: Run inference workflow
+      run: |
+        uv run python scripts/run_inference_workflow.py
+      shell: bash
+    
+    - name: Upload TextGrid outputs
+      uses: actions/upload-artifact@v4
+      with:
+        name: textgrids-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: |
+          outputs/
+          outputs_cli/
+        retention-days: 7
+    
+    - name: Upload validation report
+      uses: actions/upload-artifact@v4
+      with:
+        name: validation-report-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: validation_report.txt
+        retention-days: 7
