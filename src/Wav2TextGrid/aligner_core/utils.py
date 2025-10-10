@@ -42,7 +42,13 @@ def seq2duration(phones, resolution=0.01):
     out = []
     for p, group in groupby(phones):
         length = len(list(group))
-        out.append((round(counter * resolution, 2), round((counter + length) * resolution, 2), p))
+        out.append(
+            (
+                round(counter * resolution, 2),
+                round((counter + length) * resolution, 2),
+                p,
+            )
+        )
         counter += length
     return out
 
@@ -181,16 +187,16 @@ def extract_phone_df_from_textgrid(
     except Exception:
         phonelist = txtgrid.tierDict[phone_key].entryList
 
-    phonedf = []
+    phoneslist_proc: list = []
     for interval in phonelist:
         _phone = interval.label
         if remove_numbers:
             _phone = re.sub(r"[0-9]+", "", _phone)
-        phonedf.append([interval.start, interval.end, _phone])
+        phoneslist_proc.append([interval.start, interval.end, _phone])
 
     # why is this silence replace code duplicated? Because the output of this function will
     # contain textgrids with the silence character as [SIL] always
-    phonedf = pd.DataFrame(phonedf, columns=["start", "end", "phone"])
+    phonedf: pd.DataFrame = pd.DataFrame(phoneslist_proc, columns=["start", "end", "phone"])
     phonedf = phonedf.replace("sil", silchar)
     if replace_SP:
         phonedf = phonedf.replace("sp", silchar)

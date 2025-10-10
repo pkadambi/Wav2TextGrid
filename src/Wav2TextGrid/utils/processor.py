@@ -1,5 +1,9 @@
 # File: utils/processor.py
-from transformers import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor
+from transformers import (
+    Wav2Vec2CTCTokenizer,
+    Wav2Vec2FeatureExtractor,
+    Wav2Vec2Processor,
+)
 
 
 def load_processor(tokenizer_name: str) -> Wav2Vec2Processor:

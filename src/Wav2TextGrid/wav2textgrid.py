@@ -24,14 +24,20 @@ from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 
 
-def align_file(wavfilepath, transcriptfilepath, outfilepath, xvec_extractor=None, forced_aligner=None, target_phns=None):
-
+def align_file(
+    wavfilepath,
+    transcriptfilepath,
+    outfilepath,
+    xvec_extractor=None,
+    forced_aligner=None,
+    target_phns=None,
+):
     xvector = xvec_extractor.extract_xvector(wavfilepath)
     xvector = xvector[0][0].view(1, -1)
     if torch.cuda.is_available():
         xvector = xvector.cuda()
 
-    transcript = open(transcriptfilepath, "r").readlines()[0]
+    transcript = open(transcriptfilepath).readlines()[0]
     transcript = transcript.replace("\n", "")
     forced_aligner.serve(
         audio=wavfilepath,
@@ -80,7 +86,8 @@ def align_dirs(args, xvx, aligner):
         wav_files = [str(p) for p in Path(args.wavfile_or_dir).rglob(f"*.{args.filetype}")]
     else:
         wav_files = glob.glob(
-            os.path.join(args.wavfile_or_dir, "**", f"*.{args.filetype}"), recursive=True
+            os.path.join(args.wavfile_or_dir, "**", f"*.{args.filetype}"),
+            recursive=True,
         )
 
     success_count = 0

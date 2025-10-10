@@ -10,13 +10,15 @@ from itertools import groupby
 import numpy as np
 import torch
 
-from .alignermodel import Wav2Vec2ForFrameClassification, Wav2Vec2ForFrameClassificationSAT
+from .alignermodel import (
+    Wav2Vec2ForFrameClassification,
+    Wav2Vec2ForFrameClassificationSAT,
+)
 from .processors import CharsiuPreprocessor_en
 from .utils import duration2textgrid, forced_align, seq2duration, word2textgrid
 
 
 class base_aligner:
-
     def __init__(
         self,
         lang="en",
@@ -26,7 +28,6 @@ class base_aligner:
         processor=None,
         resolution=0.01,
     ):
-
         self.lang = lang
 
         if processor is not None:
@@ -103,7 +104,15 @@ class xVecSAT_forced_aligner(base_aligner):
         self.sil_threshold = sil_threshold
         self._freeze_model()
 
-    def align(self, audio, text, ixvector, target_phones=None, return_logits=False, TEMPERATURE=1):
+    def align(
+        self,
+        audio,
+        text,
+        ixvector,
+        target_phones=None,
+        return_logits=False,
+        TEMPERATURE=1,
+    ):
         """
         Perform forced alignment
 
@@ -258,7 +267,6 @@ class xVecSAT_forced_aligner(base_aligner):
 
 
 class charsiu_forced_aligner(base_aligner):
-
     def __init__(self, aligner, sil_threshold=4, **kwargs):
         super(charsiu_forced_aligner, self).__init__(**kwargs)
         self.aligner = Wav2Vec2ForFrameClassification.from_pretrained(aligner)

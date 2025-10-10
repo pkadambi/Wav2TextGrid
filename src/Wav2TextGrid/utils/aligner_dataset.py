@@ -1,7 +1,6 @@
 import os
 import pickle as pkl
 import platform
-from typing import Optional
 
 import librosa
 import numpy as np
@@ -43,10 +42,9 @@ class AlignerDataset(torch.utils.data.Dataset):
         phone_key: str = "phones",
         words_key: str = "words",
         adaptation_type: str = "xvec",
-        satvector_path: "Optional[str]" = None,
-        model: "Optional[Wav2Vec2ForCTC]" = None,
+        satvector_path: "str | None" = None,
+        model: "Wav2Vec2ForCTC | None" = None,
     ):
-
         self.audio_paths = audio_paths
         self.textgrid_paths = textgrid_paths
         self.words_key = words_key
@@ -70,7 +68,9 @@ class AlignerDataset(torch.utils.data.Dataset):
             if not os.path.exists(satvector_path) or args.CLEAN:
                 xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
                 self.satvector_dict = get_satvector_dict(
-                    audio_paths=audio_paths, adaptation_type=adaptation_type, xvextractor=xvx
+                    audio_paths=audio_paths,
+                    adaptation_type=adaptation_type,
+                    xvextractor=xvx,
                 )
 
                 if not os.path.exists(satvector_path):
@@ -84,7 +84,9 @@ class AlignerDataset(torch.utils.data.Dataset):
                 print("No files in previously speaker adaptation vectors... extracting again...")
                 xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
                 self.satvector_dict = get_satvector_dict(
-                    audio_paths=audio_paths, adaptation_type=adaptation_type, xvextractor=xvx
+                    audio_paths=audio_paths,
+                    adaptation_type=adaptation_type,
+                    xvextractor=xvx,
                 )
 
                 pkl.dump(self.satvector_dict, open(satvector_path, "wb"))
@@ -165,7 +167,7 @@ class AlignerDataset(torch.utils.data.Dataset):
         # frame_phone_times = []
         phones = []
         for ii, (_path, _tgpath) in enumerate(
-            tqdm.tqdm(zip(self.audio_paths, self.textgrid_paths))
+            tqdm.tqdm(zip(self.audio_paths, self.textgrid_paths, strict=False))
         ):
             manual_tg_path = _tgpath
             phone_df = textgridpath_to_phonedf(

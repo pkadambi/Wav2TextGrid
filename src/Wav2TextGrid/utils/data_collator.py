@@ -1,5 +1,4 @@
 # File: utils/data_collator.py
-from typing import Dict, List, Optional, Union
 
 import torch
 from transformers import Wav2Vec2Processor
@@ -12,12 +11,12 @@ class DataCollatorClassificationWithPadding:
         self,
         args: W2TextgridTrainerArgs,
         processor: Wav2Vec2Processor,
-        padding: Union[bool, str] = True,
-        return_attention_mask: Optional[bool] = True,
-        max_length: Optional[int] = None,
-        max_length_labels: Optional[int] = None,
-        pad_to_multiple_of: Optional[int] = None,
-        pad_to_multiple_of_labels: Optional[int] = None,
+        padding: bool | str = True,
+        return_attention_mask: bool | None = True,
+        max_length: int | None = None,
+        max_length_labels: int | None = None,
+        pad_to_multiple_of: int | None = None,
+        pad_to_multiple_of_labels: int | None = None,
     ):
         self.args = args
         self.processor = processor
@@ -29,8 +28,8 @@ class DataCollatorClassificationWithPadding:
         self.pad_to_multiple_of_labels = pad_to_multiple_of_labels
 
     def __call__(
-        self, features: List[Dict[str, Union[List[int], torch.Tensor]]]
-    ) -> Dict[str, torch.Tensor]:
+        self, features: list[dict[str, list[int] | torch.Tensor]]
+    ) -> dict[str, torch.Tensor]:
         if self.args.SAT_METHOD is not None:
             input_features = [
                 {"input_values": f["input_values"], "ixvector": f["ixvector"]} for f in features

@@ -40,72 +40,67 @@ train = [
     "datasets>=4.0.0",
     "accelerate>=0.26.0",
 ]
-code_quality = [
-    "black",
-    "isort",
-    "flake8",
-    "mypy",
-    "pylint",
-]
 
 [project.scripts]
 w2tg = "Wav2TextGrid.wav2textgrid:main"
 w2tg_train = "Wav2TextGrid.wav2textgrid_train:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[dependency-groups]
+security = [
+    "safety>=3.6.2",
+]
+dev = [
+    "pre-commit>=4.3.0",
+    "ruff>=0.14.0",
+    "mypy>=1.18.2",
+]
 
-[tool.flake8]
-max-line-length = 100
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src"]
+
 exclude = [
-    ".venv",
     ".git",
-    "__pycache__",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
     "build",
     "dist",
-    "*.egg-info",
-    ".pytest_cache",
-    ".mypy_cache",
-    "notebooks/.ipynb_checkpoints"
+    "examples",
+    "__pycache__",
 ]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort (import sorting)
+    "S",   # bandit (security)
+]
+
 ignore = [
-    "E203",  # whitespace before ':'
-    "W503",  # line break before binary operator
+    "S101",   # Use of assert (OK in tests)
+    "S301",   # Pickle usage (needed for ML)
 ]
 
-[tool.black]
-line-length = 100
-target-version = ["py311"]
-exclude = '''
-/(
-    \.venv
-  | \.git
-  | \.pytest_cache
-  | \.mypy_cache
-  | __pycache__
-  | build
-  | dist
-)/
-'''
+fixable = ["ALL"]
 
-[tool.isort]
-profile = "black"
-line_length = 100
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-ensure_newline_before_comments = true
-skip_gitignore = true
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+"scripts/**/*.py" = ["S101","S603"] # Allow subprocess in scripts
+
+[tool.ruff.lint.isort]
+known-first-party = ["Wav2TextGrid"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
+python_version = "3.10"
 ignore_missing_imports = true
-exclude = [
-    ".venv",
-    "build",
-    "dist",
-]
+
+[tool.setuptools.packages.find]
+where = ["src"]

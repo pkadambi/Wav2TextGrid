@@ -16,13 +16,16 @@ import soundfile as sf
 from g2p_en import G2p
 from g2p_en.expand import normalize_numbers
 from nltk.tokenize import TweetTokenizer
-from transformers import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor
+from transformers import (
+    Wav2Vec2CTCTokenizer,
+    Wav2Vec2FeatureExtractor,
+    Wav2Vec2Processor,
+)
 
 word_tokenize = TweetTokenizer().tokenize
 
 
 class CharsiuPreprocessor:
-
     def __init__(self):
         pass
 
@@ -108,9 +111,7 @@ English g2p processor
 
 
 class CharsiuPreprocessor_en(CharsiuPreprocessor):
-
     def __init__(self):
-
         tokenizer = Wav2Vec2CTCTokenizer.from_pretrained("charsiu/tokenizer_en_cmu")
         feature_extractor = Wav2Vec2FeatureExtractor(
             feature_size=1,
@@ -154,7 +155,7 @@ class CharsiuPreprocessor_en(CharsiuPreprocessor):
 
         aligned_phones = []
         aligned_words = []
-        for p, w in zip(phones, words):
+        for p, w in zip(phones, words, strict=False):
             if re.search(r"\w+\d?", p[0]):
                 aligned_phones.append(p)
                 aligned_words.append(w)
@@ -234,9 +235,10 @@ class CharsiuPreprocessor_en(CharsiuPreprocessor):
         return words
 
     def align_words(self, preds, phones, words):
-
-        words_rep = [w for ph, w in zip(phones, words) for p in ph]
-        phones_rep = [re.sub(r"\d", "", p) for ph, w in zip(phones, words) for p in ph]
+        words_rep = [w for ph, w in zip(phones, words, strict=False) for p in ph]
+        phones_rep = [
+            re.sub(r"\d", "", p) for ph, w in zip(phones, words, strict=False) for p in ph
+        ]
         assert len(words_rep) == len(phones_rep)
 
         # match each phone to its word

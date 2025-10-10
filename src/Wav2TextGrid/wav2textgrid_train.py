@@ -5,6 +5,7 @@ Author: Prad Kadambi
 Paper: https://pubs.asha.org/doi/10.1044/2024_JSLHR-24-00347
 
 """
+
 if __name__ == "__main__" and __package__ is None:
     import os
     import sys
@@ -68,7 +69,10 @@ def main():
             eval_dataset = None
 
     perform_train_test_split_run(
-        args=args, train_dataset=train_dataset, eval_dataset=eval_dataset, processor=processor
+        args=args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        processor=processor,
     )
 
 

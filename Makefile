@@ -1,26 +1,25 @@
-.PHONY: black isort flake8 mypy code-quality
+.PHONY: format format-check lint lint-check mypy-check
 
-black:
-	@echo "==> Checking code formatting with Black..."
-	@black --check src/ || (echo "Black formatting issues found."; exit 1)
-	@echo "Black passed."
+format:
+	@echo "==> Formatting code with Ruff..."
+	uv run --only-group dev ruff format .
 
-isort:
-	@echo "==> Checking import sorting with isort..."
-	@isort --check-only src/ || (echo "isort import sorting issues found."; exit 1)
-	@echo "isort passed."
+format-check:
+	@echo "==> Checking code formatting with Ruff..."
+	uv run --only-group dev ruff format --check .
 
-flake8:
-	@echo "==> Linting with flake8..."
-	@flake8 src/ --max-line-length=100 || (echo "flake8 linting issues found."; exit 1)
-	@echo "flake8 passed."
+lint:
+	@echo "==> Linting with Ruff..."
+	uv run --only-group dev ruff check --fix .
 
-mypy:
-	@echo "==> Type checking with mypy..."
-	@mypy src/ --ignore-missing-imports || (echo "mypy type checking issues found."; exit 1)
-	@echo "mypy passed."
+lint-check:
+	@echo "==> Checking linting with Ruff..."
+	uv run --only-group dev ruff check .
 
-code-quality: black isort flake8 mypy
-	@echo "=========================================="
-	@echo "All code quality checks passed! 🎉"
-	@echo "=========================================="
+mypy-check:
+	@echo "==> Running mypy for type checking..."
+	uv run --only-group dev mypy .
+
+fresh-slate:
+	@echo "==> Removing virtual environment and lock file..."
+	@read -p "Are you sure you want to proceed? [y/N] " confirm && [ $${confirm} = "y" ] || [ $${confirm} = "Y" ] && rm -rf uv.lock .venv || echo "Aborted."

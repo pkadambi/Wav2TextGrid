@@ -4,7 +4,10 @@ import numpy as np
 import torch
 from transformers import Trainer, TrainingArguments
 
-from Wav2TextGrid.aligner_core.aligner import charsiu_forced_aligner, xVecSAT_forced_aligner
+from Wav2TextGrid.aligner_core.aligner import (
+    charsiu_forced_aligner,
+    xVecSAT_forced_aligner,
+)
 from Wav2TextGrid.aligner_core.alignermodel import (
     Wav2Vec2ForFrameClassification,
     Wav2Vec2ForFrameClassificationSAT,
@@ -30,14 +33,18 @@ def write_textgrid_alignments_for_dataset(aligner, dataset, output_dir):
 
     for ii, audiofile in enumerate(audiofiles):
         output_path = os.path.join(
-            output_dir, get_filename_with_upper_dirs(audiofile, 2).replace(".wav", ".TextGrid")
+            output_dir,
+            get_filename_with_upper_dirs(audiofile, 2).replace(".wav", ".TextGrid"),
         )
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         try:
             if ixvector is not None and isinstance(aligner, xVecSAT_forced_aligner):
                 vec = torch.Tensor(ixvector[ii]).reshape(1, -1).to(aligner.aligner.device)
                 aligner.serve(
-                    audio=audiofile, text=transcripts[ii], save_to=output_path, ixvector=vec
+                    audio=audiofile,
+                    text=transcripts[ii],
+                    save_to=output_path,
+                    ixvector=vec,
                 )
             else:
                 aligner.serve(audio=audiofile, text=transcripts[ii], save_to=output_path)
@@ -45,12 +52,15 @@ def write_textgrid_alignments_for_dataset(aligner, dataset, output_dir):
             print("Error aligning:", audiofile)
             try:
                 aligner.serve(
-                    audio=audiofile, text=transcripts[ii], save_to=output_path, ixvector=vec
+                    audio=audiofile,
+                    text=transcripts[ii],
+                    save_to=output_path,
+                    ixvector=vec,
                 )
             except Exception:
                 print("TODO add error handling here")
 
-        print(f"Aligning {ii+1}/{len(audiofiles)}...", end="\r")
+        print(f"Aligning {ii + 1}/{len(audiofiles)}...", end="\r")
         time.sleep(0.02)
 
 
@@ -136,7 +146,8 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         trainer.train()
         trainer.save_model(args.MODEL_OUTPUT_DIR)
         torch.save(
-            trainer.model.state_dict(), os.path.join(args.MODEL_OUTPUT_DIR, "pytorch_model.bin")
+            trainer.model.state_dict(),
+            os.path.join(args.MODEL_OUTPUT_DIR, "pytorch_model.bin"),
         )
         del model
 
