@@ -1,5 +1,4 @@
-### Wav2TextGrid
---- 
+# Wav2TextGrid
 
 [![Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Wav2TextGrid-blue)](https://huggingface.co/pkadambi/wav2textgrid)
 ![Security](https://github.com/pkadambi/Wav2TextGrid/actions/workflows/security.yml/badge.svg)
@@ -12,231 +11,307 @@ Wav2TextGrid has been tested on Ubuntu 18.04, Ubuntu 22.04, Windows 11, and macO
 
 ⚠️ This aligner is currently in development. If you encounter issues, please open an issue or email me directly: pkadambi@asu.edu
 
-# 🚀 Installation + Quick Start
+## 🚀 Quick Start (User Installation)
 
-### Wav2TextGridGUI
-- A Linux friendly (tested on Ubuntu 22.04 and 18.04) version of the aligner [can be found here](https://drive.google.com/file/d/1ZaRlLNE17y6OAivL_11NRLxlDbDWnOTh/view?usp=sharing)
+### For Users - Install from PyPI
 
----
-### Required Dependencies
-
- <u>Pytorch/Torchaudio/Torchvision</u>
-
-⚠️ Note: The package installs the CPU version of pytorch by default.
-Install your preferred pytorch GPU support (v2.5>) BEFORE installing if you would like to use a GPU.
-
-
-
-
-### Installation 
-`pip install Wav2TextGrid==0.01.02`
-
-Make sure to include the version number. Check for the latest release on PyPI:
-https://pypi.org/project/Wav2TextGrid/
-
-Python 3.10 required
-
-
-# Usage
-
-------
-# Quickstart Example: Alignment without training
-
-1. **Download and extract `examples.zip` in this repo**
-2. **Align an single file** (in unix systems): 
-    ```
-    w2tg wavfile_or_dir=/path/to/examples/test.wav  transcriptfile_or_dir=/path/to/examples/test.lab outfile_or_dir=./output.TextGrid
-    ```
-     OR more simply.
-    ```
-    w2tg /path/to/examples/test.wav  /path/to/examples/test.lab ./output.TextGrid
-    ```
-    This aligns the file `test.wav` using `test.lab` to output `output.TextGrid` 
-
-3. **Align an entire directory**
-    ```
-    w2tg /path/to/examples/ /path/to/examples/ ./outputs
-    ```
-   This aligns all `.wav` and `.lab` files in the folder `examples` to the `outputs` folder 
-
-[//]: # (Output text grid stored in test.TextGrid)
-
-## 📁 Best Practice: Usage and Data Format For `w2tg `
-Follow the kaldi style
-```
-│/Dataset/folder/
-├── Speaker1
-│ ├── file1.lab
-│ ├── file1.wav
-│ ├── file2.wav
-│ ├── file2.lab
-├── Speaker2
-│ ├── file3.lab
-│ ├── file3.wav
-│ ├── file4.wav
-│ ├── file4.lab
+```bash
+pip install Wav2TextGrid==0.1.2
 ```
 
+⚠️ **Note**: The package installs the CPU version of PyTorch by default. Install your preferred PyTorch GPU support (v2.5+) BEFORE installing if you would like to use a GPU.
 
-### Best Practice - `w2tg_train`
-Follow the kaldi style
-```
-│/Dataset/folder/
-├── Speaker1
-│ ├── file1.lab
-│ ├── file1.wav
-│ ├── file2.wav
-│ ├── file2.lab
-├── Speaker2
-│ ├── file3.lab
-│ ├── file3.wav
-│ ├── file4.wav
-│ ├── file4.lab
-```
-# ⚙️ Quickstart Example: Training your own alignment & perform alignment with the trained model 
-In this section we will see how to train a new model, and perform alignment with the trained model 
+**Requirements**: Python 3.10+
 
-Steps
-1. Prepare dataset
-2. Train the model using `w2tg_train`
-3. Align using your trained model using `w2tg`
+### Basic Usage
 
-### 1. Prepare dataset
-Follow the kaldi style
-```
-│/Dataset/folder/
-├── Speaker1
-│ ├── file1.lab
-│ ├── file1.wav
-│ ├── file1.TextGrid
-│ ├── file2.wav
-│ ├── file2.lab
-│ ├── file2.TextGrid
-├── Speaker2
-│ ├── file3.lab
-│ ├── file3.wav
-│ ├── file3.TextGrid
-│ ├── file4.wav
-│ ├── file4.lab
-│ ├── file4.TextGrid
-```
+1. **Align a single file**:
+   ```bash
+   w2tg /path/to/audio.wav /path/to/transcript.lab ./output.TextGrid
+   ```
 
-### 2. Train the Model
-      
-      w2tg_train \
-      --train_audio_dir=/Dataset/folder \
-      --train_textgrids_dir=/Dataset/folder \
-      --eval_audio_dir=/EvalDataset/folder \
-      --eval_textgrids_dir=/EvalDataset/folder \
-      --model_output_dir=./OUTPUT_MODEL \
-      --dataset_dir=./DATA \
-      --run_output_folder=./RESULTS
-
-      
-   
-   Note that the `--eval_audio_dir` and `--eval_dataset_dir` are optional. 
-
-   **<u>Eval dataset must include textgrids.</u>**
-
-   **<u>If you want to generate alignments for a target dataset (which doesn't have textgrids) using a trained model, you must use step 3. </u>** 
-
-Training produces the following 
-```
-│--run_output_folder
-├── alignments_baseline
-│   └── alignments on the eval dataset (if provided) using the base model
-├── eval_trained
-│   └── alignments on the eval dataset (if provided) using the trained model 
-└── OUTPUT_MODEL
-    ├── trained model files
-```
-
-
-### 3. **Align an entire directory**
-
-    ```
-    w2tg /Data/to/align /Data/to/align ./output_folder --aligner_model=./RESULTS/OUTPUT_MODEL
-    ```
-Where:
-
-- `--aligner_model` is your trained model directory
-  
-- `./output_folder` is the target alignment output
-- `/Data/to/align` for format see Quickstart Example: Alignment without training
-- 
-   Where `./output folder`, `--aligner_model`, `/Data/to/align` can be specified based on user data, and `./RESULTS/OUTPUT_MODEL` is the user trained model.
-    
-
-
-
-# 🎵 Data Format
-
-----
-
-## Audio Format
-
-#### `w2tg` likely works for `mp3` and `wav` files, just make sure to specify `--filetype=mp3`
-
-#### `w2tg_train` only works with `.wav` 
-
-#### Input Audio: `.wav` or `.mp3` files will be 
-
-## Transcripts: `.lab` files format
-All `.lab` files are expected to contain only one line with the string transcript.
-For example a `.lab` file may look like:
-
-file1.lab: 
-`SHE HAD YOUR DARK SUIT IN GREASY WASH WATER ALL YEAR`
-
-## Textgrid Format
-Must contain `IntervalTier` of `phones`.
-
-
-## 🧪 Wav2TextGrid Demo
+2. **Align an entire directory**:
+   ```bash
+   w2tg /path/to/audio_dir/ /path/to/transcript_dir/ ./outputs/
+   ```
 
 ---
 
-Coming soon!
+## 🛠️ Development Setup
+
+### Prerequisites
+
+- **Python 3.10+**
+- **[uv](https://docs.astral.sh/uv/)** - Modern Python package manager
+
+### Install uv
+
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Or via pip
+pip install uv
+```
+
+### Clone and Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/pkadambi/Wav2TextGrid.git
+cd Wav2TextGrid
+
+# Create virtual environment and install dependencies
+uv sync
+
+# Install pre-commit hooks
+uv run --only-group dev pre-commit install
+```
+
+### Development Commands (Makefile)
+
+The project includes a Makefile with common development tasks:
+
+```bash
+# Code formatting
+make format          # Format code with Ruff
+make format-check    # Check formatting without changes
+
+# Linting
+make lint            # Fix linting issues with Ruff  
+make lint-check      # Check linting without fixes
+
+# Type checking
+make mypy-check      # Run mypy type checking
+
+# Cleanup
+make fresh-slate     # Cleans python environment by deleting .venv and uv.lock
+```
+
+### Dependency Groups
+
+The project uses `uv` dependency groups defined in `pyproject.toml`:
+
+- **`dev`**: Development tools (pre-commit, ruff, mypy)
+- **`security`**: Security scanning tools (safety) ()
+
+```bash
+# Install only development dependencies
+uv sync --only-group dev
+
+# Install specific groups
+uv sync --group dev --group security
+
+# Run commands with specific groups
+uv run --only-group dev ruff check .
+```
+
+### Pre-commit Hooks
+
+Set up pre-commit to ensure code quality:
+
+```bash
+# Install pre-commit hooks (run once)
+uv run --only-group dev pre-commit install
+
+# Run pre-commit on all files
+uv run --only-group dev pre-commit run --all-files
+
+# Pre-commit will now run automatically on git commits
+```
+
 
 ---
-## ⚠️ Aligner Scope of Applicability
+
+## 📁 Data Format and Best Practices
+
+### Recommended Directory Structure
+
+Follow the Kaldi-style organization for best results:
+
+```
+/Dataset/folder/
+├── Speaker1/
+│   ├── file1.lab
+│   ├── file1.wav
+│   ├── file2.lab
+│   ├── file2.wav
+├── Speaker2/
+│   ├── file3.lab
+│   ├── file3.wav
+│   ├── file4.lab
+│   ├── file4.wav
+```
+
+### File Formats
+
+- **Audio files**: `.wav` format (16kHz recommended)
+- **Transcript files**: `.lab` format containing plain text transcriptions
+- **Output**: `.TextGrid` format compatible with Praat
 
 ---
 
-Wav2TextGrid was trained on a corpus of children (ages 3–7, 3700 utterances) reading short utterances (~2–5s) from the Test of Childhood Stuttering (TOCS). It works best for:
+## ⚙️ Training Custom Models
 
-- Child speech
+### 2. Train Your Model
 
-- Short utterances
+```bash
+w2tg_train /path/to/training_data/ /path/to/output_model/
+```
 
-- Clean, non-conversational audio
+### 3. Use Trained Model for Alignment
 
-The aligner was initialized using a model trained on adult speech (CommonVoice + LibriSpeech), but was not re-validated on adult speakers after fine-tuning. Use with caution on:
-
-- Long utterances
-
-- Conversational audio
-
-- Adult speech (especially unvalidated)
-
-If your data and use case do not align with the training data described abive (short child speech utterances) for Wav2TextGrid, take care to verify the alignments produced by Wav2TextGrid.
-
-
-Thus, Wav2TextGrid likely performs best on children from this same age range and on audio collected in this same context. Use in conversational speech or speech including both children and adults has not been validated.
-
-
-
-## 📝 TODOs
+```bash
+w2tg /path/to/audio.wav /path/to/transcript.lab ./output.TextGrid --aligner_model /path/to/your_model/
+```
 
 ---
 
-### Functionality
-The TODOs left will be completed by prior to the publication of the article.
-- [x] ~~Aligner functionality~~
-- [x] ~~Quickstart Demo~~
-- [x] ~~Training code + functionality~~
-- [ ] ~~Demo for training aligner system [By 04/20]~~
-- [ ] ~~GUI Application for Linux [By 04/20]~~
+## 🏗️ Project Structure
+
+```
+Wav2TextGrid/
+├── src/Wav2TextGrid/           # Main package source
+│   ├── aligner_core/           # Core alignment algorithms
+│   ├── utils/                  # Utility functions
+│   ├── wav2textgrid.py         # Inference interface
+│   └── wav2textgrid_train.py   # Training interface
+├── scripts/                    # Development scripts
+│   ├── run_inference_workflow.py  # CI/CD testing
+│   └── test_local.py           # Local testing
+├── examples/                   # Example audio/transcript pairs
+├── .github/workflows/          # CI/CD pipelines
+├── Makefile                    # Development commands
+├── pyproject.toml              # Project configuration
+└── uv.lock                     # Dependency lock file
+```
+
+---
+
+## 🔧 Development Workflow
+
+### Making Changes
+
+1. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Setup firewall using safety**
+    =>https://docs.safetycli.com/safety-docs/firewall/introduction-to-safety-firewall
+
+
+3. **Make your changes** and ensure code quality:
+   ```bash
+   make format      # Format code
+   make lint        # Fix linting issues
+   make mypy-check  # Type checking
+   ```
+
+4. **Commit with pre-commit checks**:
+   ```bash
+   git add .
+   git commit -m "Your commit message"
+   # Pre-commit hooks will run automatically
+   ```
+
+### Code Quality Standards
+
+- **Formatting**: Ruff formatter
+- **Linting**: Ruff linter with security checks
+- **Type checking**: mypy
+- **Pre-commit hooks**: Automatic checks on commit
+- **CI/CD**: GitHub Actions for multi-platform testing
+
+---
+
+### Local Testing
+
+
+## 🎵 Supported Formats
+
+### Audio Formats
+- **Primary**: `.wav` files (recommended: 16kHz sampling rate)
+- **Alternative**: `.mp3` files (specify `--filetype=mp3` for `w2tg`)
+- **Training**: Only `.wav` files supported for `w2tg_train`
+
+### Transcript Format
+- **File extension**: `.lab`
+- **Content**: Single line of text transcript
+- **Example**: `SHE HAD YOUR DARK SUIT IN GREASY WASH WATER ALL YEAR`
+
+### TextGrid Format
+- **Output**: Praat-compatible `.TextGrid` files
+- **Structure**: Contains `IntervalTier` named "phones"
+- **Training**: Must include phone-level alignments for training data
+
+---
+
+## ⚠️ Model Scope and Limitations
+
+### Training Data
+Wav2TextGrid was trained on:
+- **Demographics**: Children ages 3–7 years
+- **Dataset**: 3,700 utterances from Test of Childhood Stuttering (TOCS)
+- **Duration**: Short utterances (~2–5 seconds)
+- **Quality**: Clean, non-conversational audio
+
+### Best Performance
+- ✅ Child speech (ages 3–7)
+- ✅ Short, clean utterances
+- ✅ Read speech (non-conversational)
+- ✅ High-quality audio recordings
+
+### Use With Caution
+- ⚠️ Adult speech (not validated after fine-tuning)
+- ⚠️ Long utterances (>5-10 seconds)
+- ⚠️ Conversational or spontaneous speech
+- ⚠️ Noisy audio recordings
+- ⚠️ Mixed adult/child conversations
+
+**Recommendation**: Always validate alignments when using outside the intended scope.
+
+---
+
+## 🔗 Resources
+
+- **Hugging Face Model**: [pkadambi/wav2textgrid](https://huggingface.co/pkadambi/wav2textgrid)
+- **PyPI Package**: [Wav2TextGrid](https://pypi.org/project/Wav2TextGrid/)
+- **Issues**: [GitHub Issues](https://github.com/pkadambi/Wav2TextGrid/issues)
+- **Contact**: pkadambi@asu.edu
+
+---
+
+## 📄 Citation
+
+If you use Wav2TextGrid in your research, please cite:
+
+```bibtex
+@software{kadambi2024wav2textgrid,
+  title={Wav2TextGrid: A Phonetic Forced Aligner},
+  author={Kadambi, Prad},
+  year={2024},
+  url={https://github.com/pkadambi/Wav2TextGrid},
+  version={0.1.2}
+}
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Based on techniques from [Charsiu](https://github.com/lingjzhu/charsiu) by lingjzhu and henrynomeland
+- Initialized with models trained on CommonVoice and LibriSpeech datasets
+- Fine-tuned on Test of Childhood Stuttering (TOCS) corpus
 - [ ] GUI Application for Windows (ongoing, will be complete by 05/31)
 - [ ] Add training functionality to GUI (longer term, likely by 06/31) 
 
