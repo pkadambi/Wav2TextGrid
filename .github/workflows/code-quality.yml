@@ -1,31 +1,40 @@
-name: Code Quality
+name: Code Quality Scan
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  code-quality:
+  quality-checks:
+    name: Code Quality Scan
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install linting tools
-      run: |
-        pip install -e '.[code_quality]'
-    
-    - name: Check code formatting with Black
-      run: black --check src/
-    
-    - name: Check import sorting with isort
-      run: isort --check-only src/
-    
-    - name: Lint with flake8
-      run: flake8 src/ --max-line-length=100
+      - uses: actions/checkout@v4
 
-    - name: Type checking with mypy
-      run: mypy src/ --ignore-missing-imports
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install UV
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Add UV to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Check code formatting with Ruff
+        run: |
+          echo "==> Checking code formatting with Ruff..."
+          uv run --only-group dev ruff format --check .
+
+      - name: Check linting with Ruff
+        run: |
+          echo "==> Checking linting with Ruff..."
+          uv run --only-group dev ruff check .
+
+      - name: Run mypy for type checking
+        run: |
+          echo "==> Running mypy for type checking..."
+          uv run --only-group dev mypy .

@@ -39,7 +39,6 @@ class Wav2Vec2ForFrameClassificationSAT(Wav2Vec2ForCTC):
         labels=None,
         ixvector=None,
     ):
-
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.wav2vec2(
@@ -113,7 +112,6 @@ def from_pretrained(cls, *args, **kwargs):
 
 
 class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):
-
     def forward(
         self,
         input_values,
@@ -123,7 +121,6 @@ class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):
         return_dict=None,
         labels=None,
     ):
-
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.wav2vec2(
@@ -141,7 +138,6 @@ class Wav2Vec2ForFrameClassification(Wav2Vec2ForCTC):
 
         loss = None
         if labels is not None:
-
             if labels.max() >= self.config.vocab_size:
                 raise ValueError(f"Label values must be <= vocab_size: {self.config.vocab_size}")
 

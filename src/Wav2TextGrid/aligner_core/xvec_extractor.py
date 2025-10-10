@@ -6,9 +6,7 @@ from speechbrain.inference.VAD import VAD
 
 
 class xVecExtractor:
-
     def __init__(self, method, batch_size=128, device="cpu"):
-
         assert device in ["cuda", "cpu"], "Error: device must be `cuda` or `cpu`"
 
         self.VAD = VAD.from_hparams(
