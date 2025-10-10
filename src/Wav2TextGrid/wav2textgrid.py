@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Author: Prad Kadambi
 Paper: https://pubs.asha.org/doi/10.1044/2024_JSLHR-24-00347
@@ -26,16 +24,16 @@ from Wav2TextGrid.aligner_core.aligner import xVecSAT_forced_aligner
 from Wav2TextGrid.aligner_core.xvec_extractor import xVecExtractor
 
 
-def align_file(wavfilepath, transcriptfilepath, outfilepath, target_phns=None):
+def align_file(wavfilepath, transcriptfilepath, outfilepath, xvec_extractor=None, forced_aligner=None, target_phns=None):
 
-    xvector = xvx.extract_xvector(wavfilepath)
+    xvector = xvec_extractor.extract_xvector(wavfilepath)
     xvector = xvector[0][0].view(1, -1)
     if torch.cuda.is_available():
         xvector = xvector.cuda()
 
     transcript = open(transcriptfilepath, "r").readlines()[0]
     transcript = transcript.replace("\n", "")
-    aligner.serve(
+    forced_aligner.serve(
         audio=wavfilepath,
         text=transcript,
         save_to=outfilepath,
@@ -58,18 +56,24 @@ def main():
     args = parser.parse_args()
 
     # args.
-    global xvx, aligner
+    # global xvx, aligner
 
     xvx = xVecExtractor(method="xvector")
     aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
 
     if os.path.isdir(args.wavfile_or_dir):
-        align_dirs(args)
+        align_dirs(args, xvx, aligner)
     else:
-        align_file(args.wavfile_or_dir, args.transcriptfile_or_dir, args.outfile_or_dir)
+        align_file(
+            args.wavfile_or_dir,
+            args.transcriptfile_or_dir,
+            args.outfile_or_dir,
+            xvec_extractor=xvx,
+            forced_aligner=aligner,
+        )
 
 
-def align_dirs(args):
+def align_dirs(args, xvx, aligner):
     # Get list of .wav files in directory1 and its subdirectories
     if platform.system() == "Windows":
         # Use pathlib for Windows, especially with UNC paths
@@ -96,7 +100,7 @@ def align_dirs(args):
             try:
                 # Align .wav and .lab files
                 align_file(
-                    wav_file, lab_file, outfpath
+                    wav_file, lab_file, outfpath, xvx, aligner
                 )  # always avoid downsampling because it occurs earlier
                 success_count += 1
             except Exception as e:
