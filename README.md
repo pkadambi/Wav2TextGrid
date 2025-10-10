@@ -2,8 +2,9 @@
 --- 
 
 [![Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Wav2TextGrid-blue)](https://huggingface.co/pkadambi/wav2textgrid)
+![Security](https://github.com/pkadambi/Wav2TextGrid/actions/workflows/security.yml/badge.svg)
 ![Code Quality](https://github.com/pkadambi/Wav2TextGrid/actions/workflows/code-quality.yml/badge.svg)
-![macOS/Windows/Linux Inference](https://github.com/pkadambi/Wav2TextGrid/actions/workflows/test-inference.yml/badge.svg)
+![macOS/Windows/Linux Inference](https://github.com/pkadambi/Wav2TextGrid/actions/workflows/inference.yml/badge.svg)
 
 *Version 0.1.2 (Beta)* — A phonetic forced aligner 
 
