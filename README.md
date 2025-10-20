@@ -362,6 +362,9 @@ Uses `g2p_en` (CMUdict) for text-to-phoneme conversion.
 - Alignment via Viterbi decoding (10ms granularity)
 
 ## Acknowledgements
+---
+
+This work was supported by the National Institute on Deafness and Other Communication Disorders of the National Institutes of Health under award number R01 DC019645.
 
 ---
 Portions of this project adapt code from the excellent Charsiu aligner https://github.com/lingjzhu/charsiu.
