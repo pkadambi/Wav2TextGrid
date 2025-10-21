@@ -65,11 +65,18 @@ def main():
     # global xvx, aligner
 
     xvx = xVecExtractor(method="xvector")
-    aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
 
     if os.path.isdir(args.wavfile_or_dir):
-        align_dirs(args, xvx, aligner)
+        align_dirs(
+            args.wavfile_or_dir,
+            args.transcriptfile_or_dir,
+            args.outfile_or_dir,
+            xvx,
+            args.aligner_model,
+            args.filetype
+        )
     else:
+        aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
         align_file(
             args.wavfile_or_dir,
             args.transcriptfile_or_dir,
@@ -79,14 +86,21 @@ def main():
         )
 
 
-def align_dirs(args, xvx, aligner):
-    # Get list of .wav files in directory1 and its subdirectories
+def align_dirs(wavfile_or_dir, transcriptfile_or_dir, outfile_or_dir, xvx=None, aligner_model=None, filetype="wav"):
+    # TODO: Remove redundancy with main() in terms of parameter passing
+    if xvx is None:
+        xvx = xVecExtractor(method="xvector")
+    if aligner_model is None:
+        aligner_model = "pkadambi/Wav2TextGrid"
+
+    aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=512)
+        
     if platform.system() == "Windows":
         # Use pathlib for Windows, especially with UNC paths
-        wav_files = [str(p) for p in Path(args.wavfile_or_dir).rglob(f"*.{args.filetype}")]
+        wav_files = [str(p) for p in Path(wavfile_or_dir).rglob(f"*.{filetype}")]
     else:
         wav_files = glob.glob(
-            os.path.join(args.wavfile_or_dir, "**", f"*.{args.filetype}"),
+            os.path.join(wavfile_or_dir, "**", f"*.{filetype}"),
             recursive=True,
         )
 
@@ -94,13 +108,13 @@ def align_dirs(args, xvx, aligner):
     failure_count = 0
     missing_lab_files = []
     # Iterate over .wav files
-    os.makedirs(args.outfile_or_dir, exist_ok=True)
+    os.makedirs(outfile_or_dir, exist_ok=True)
 
     for wav_file in tqdm(wav_files):
         # Generate corresponding .lab file path
-        rel_path = os.path.relpath(wav_file, args.wavfile_or_dir)
-        lab_file = os.path.join(args.transcriptfile_or_dir, os.path.splitext(rel_path)[0] + ".lab")
-        outfpath = os.path.join(args.outfile_or_dir, os.path.splitext(rel_path)[0] + ".TextGrid")
+        rel_path = os.path.relpath(wav_file, wavfile_or_dir)
+        lab_file = os.path.join(transcriptfile_or_dir, os.path.splitext(rel_path)[0] + ".lab")
+        outfpath = os.path.join(outfile_or_dir, os.path.splitext(rel_path)[0] + ".TextGrid")
 
         # Check if .lab file exists
         if os.path.exists(lab_file):
@@ -117,8 +131,8 @@ def align_dirs(args, xvx, aligner):
             missing_lab_files.append(lab_file)
             print(f"Did not find transcript at {lab_file} for wav file {wav_file}")
 
-        # Write to alignment log
-    with open(os.path.join(args.outfile_or_dir, "alignment.log"), "w") as log_file:
+    # Write to alignment log
+    with open(os.path.join(outfile_or_dir, "alignment.log"), "w") as log_file:
         log_file.write(f"Successfully aligned: {success_count}\n")
         log_file.write(f"Alignment failures: {failure_count}\n")
 
