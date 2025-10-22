@@ -160,7 +160,6 @@ def main():
         sys.exit(1)
 
     # Test only CLI interface
-    print("==> Testing CLI interface only...")
     cli_passed = test_cli_interface(args.examples_dir, args.output_dir)
     if cli_passed:
         print("\nSUCCESS: CLI interface test passed!")

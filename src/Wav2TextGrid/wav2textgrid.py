@@ -73,7 +73,7 @@ def main():
             args.outfile_or_dir,
             xvx,
             args.aligner_model,
-            args.filetype
+            args.filetype,
         )
     else:
         aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
@@ -86,7 +86,14 @@ def main():
         )
 
 
-def align_dirs(wavfile_or_dir, transcriptfile_or_dir, outfile_or_dir, xvx=None, aligner_model=None, filetype="wav"):
+def align_dirs(
+    wavfile_or_dir,
+    transcriptfile_or_dir,
+    outfile_or_dir,
+    xvx=None,
+    aligner_model=None,
+    filetype="wav",
+):
     # TODO: Remove redundancy with main() in terms of parameter passing
     if xvx is None:
         xvx = xVecExtractor(method="xvector")
@@ -94,7 +101,7 @@ def align_dirs(wavfile_or_dir, transcriptfile_or_dir, outfile_or_dir, xvx=None, 
         aligner_model = "pkadambi/Wav2TextGrid"
 
     aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=512)
-        
+
     if platform.system() == "Windows":
         # Use pathlib for Windows, especially with UNC paths
         wav_files = [str(p) for p in Path(wavfile_or_dir).rglob(f"*.{filetype}")]
