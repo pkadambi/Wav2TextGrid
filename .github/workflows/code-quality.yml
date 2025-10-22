@@ -2,14 +2,13 @@ name: Code Quality Scan
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 jobs:
-  quality-checks:
-    name: Code Quality Scan
+  run-quality-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
