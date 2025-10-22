@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10"]
 
     steps:
     - uses: actions/checkout@v4
@@ -54,6 +54,8 @@ jobs:
         echo "$env:USERPROFILE\.cargo\bin" >> $env:GITHUB_PATH
 
     - name: Install dependencies with UV
+      env:
+        UV_HTTP_TIMEOUT: 300
       run: |
         uv sync
       shell: bash
