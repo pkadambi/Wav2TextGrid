@@ -1,1 +1,1 @@
-# TODO Expose subset for easier and undergo any initialization for easier imports
+# Core functionalities for Wav2TextGrid package

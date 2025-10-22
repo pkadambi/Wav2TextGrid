@@ -1,18 +1,8 @@
-#!/usr/bin/env python3
-
 """
 Author: Prad Kadambi
 Paper: https://pubs.asha.org/doi/10.1044/2024_JSLHR-24-00347
 
 """
-
-if __name__ == "__main__" and __package__ is None:
-    import os
-    import sys
-
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    # import Wav2TextGrid  # triggers absolute import resolution
-
 
 import nltk
 

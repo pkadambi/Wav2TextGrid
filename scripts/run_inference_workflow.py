@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Inference workflow script for Wav2TextGrid
 Runs inference on all wav/lab pairs in examples directory and validates outputs
@@ -140,16 +139,6 @@ def main():
         "--output-dir",
         default="outputs",
         help="Directory to save TextGrid outputs (default: outputs)",
-    )
-    parser.add_argument(
-        "--no-cli-test",
-        action="store_true",
-        help="Skip CLI interface testing (default: test CLI)",
-    )
-    parser.add_argument(
-        "--cli-only",
-        action="store_true",
-        help="Only test CLI interface, skip function-based tests",
     )
 
     args = parser.parse_args()

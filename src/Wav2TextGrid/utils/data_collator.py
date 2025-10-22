@@ -3,7 +3,7 @@
 import torch
 from transformers import Wav2Vec2Processor
 
-from ..utils.args import W2TextgridTrainerArgs
+from .args import W2TextgridTrainerArgs
 
 
 class DataCollatorClassificationWithPadding:
