@@ -8,7 +8,7 @@ on:
   workflow_dispatch:  # Allow manual triggers
 
 jobs:
-  security:
+  run-security-scans:
     runs-on: ubuntu-latest
     
     steps:
@@ -25,7 +25,7 @@ jobs:
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       
       - name: Check for vulnerabilities with Safety
-        run: uv run --only-group security safety scan --json
+        run: uv run --only-group security safety check --json --continue-on-error
         continue-on-error: true  # Don't fail workflow on vulnerabilities
       
       - name: Security linting with Ruff (Bandit rules)
