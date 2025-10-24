@@ -6,6 +6,7 @@
 ![macOS/Windows/Linux Inference](https://github.com/pkadambi/Wav2TextGrid/actions/workflows/inference.yml/badge.svg)
 
 This package accompanies the following paper: https://doi.org/10.1044/2024_JSLHR-24-00347
+
 *Version 0.1.2 (Beta)* — A phonetic forced aligner 
 
 Wav2TextGrid has been tested on Ubuntu 18.04, Ubuntu 22.04, Windows 11, and macOS 15.6.1
