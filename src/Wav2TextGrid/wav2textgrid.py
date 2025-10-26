@@ -52,6 +52,7 @@ def main():
     parser.add_argument("outfile_or_dir", type=str)  # default=str)
     parser.add_argument("--filetype", default="wav")
     parser.add_argument("--aligner_model", type=str, default="pkadambi/Wav2TextGrid")
+    parser.add_argument("--redownload_model", type='store_true')
     args = parser.parse_args()
 
     # args.
@@ -69,7 +70,7 @@ def main():
             args.filetype,
         )
     else:
-        aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
+        aligner = xVecSAT_forced_aligner(args.aligner_model, redownload_model, satvector_size=512)
         align_file(
             args.wavfile_or_dir,
             args.transcriptfile_or_dir,

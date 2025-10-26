@@ -96,11 +96,9 @@ class base_aligner:
 
 
 class xVecSAT_forced_aligner(base_aligner):
-    def __init__(self, aligner, satvector_size, sil_threshold=4, **kwargs):
+    def __init__(self, aligner, satvector_size, redownload_model=False, sil_threshold=4, **kwargs):
         super(xVecSAT_forced_aligner, self).__init__(**kwargs)
-        self.aligner = Wav2Vec2ForFrameClassificationSAT.from_pretrained(
-            aligner, satvector_size=satvector_size
-        )
+        self.aligner = Wav2Vec2ForFrameClassificationSAT.from_pretrained(aligner, satvector_size=satvector_size, force_download=redownload_model)
         self.sil_threshold = sil_threshold
         self._freeze_model()
 
