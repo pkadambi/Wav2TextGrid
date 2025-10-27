@@ -24,6 +24,7 @@ def align_file(
     xvec_extractor=None,
     forced_aligner=None,
     target_phns=None,
+    postproc=False,
 ):
     xvector = xvec_extractor.extract_xvector(wavfilepath)
     xvector = xvector[0][0].view(1, -1)
@@ -52,7 +53,8 @@ def main():
     parser.add_argument("outfile_or_dir", type=str)  # default=str)
     parser.add_argument("--filetype", default="wav")
     parser.add_argument("--aligner_model", type=str, default="pkadambi/Wav2TextGrid")
-    parser.add_argument("--redownload_model", type='store_true')
+    parser.add_argument("--redownload_model", type="store_true")
+    parser.add_argument("--postproc_textgrids", type="store_true")
     args = parser.parse_args()
 
     # args.
@@ -87,6 +89,7 @@ def align_dirs(
     xvx=None,
     aligner_model=None,
     filetype="wav",
+    postproc=False,
 ):
     # TODO: Remove redundancy with main() in terms of parameter passing
     if xvx is None:
@@ -122,7 +125,7 @@ def align_dirs(
             try:
                 # Align .wav and .lab files
                 align_file(
-                    wav_file, lab_file, outfpath, xvx, aligner
+                    wav_file, lab_file, outfpath, xvx, aligner, postproc=postproc
                 )  # always avoid downsampling because it occurs earlier
                 success_count += 1
             except Exception as e:
