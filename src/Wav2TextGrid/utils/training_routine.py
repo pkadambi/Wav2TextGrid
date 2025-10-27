@@ -63,40 +63,66 @@ def write_textgrid_alignments_for_dataset(aligner, dataset, output_dir):
         print(f"Aligning {ii + 1}/{len(audiofiles)}...", end="\r")
         time.sleep(0.02)
 
-
-def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=None):
+def perform_train_test_split_run(
+    train_dataset,
+    processor,
+    SAT_METHOD,
+    MODEL_NAME,
+    DEVICE,
+    WRITE_BASE_ALIGNMENTS,
+    BASELINE_TG_DIR,
+    MODEL_OUTPUT_DIR,
+    NTRAIN_EPOCHS,
+    RETRAIN,
+    TG_OUTPUT_DIR,
+    eval_dataset=None
+):
     from Wav2TextGrid.utils.data_collator import DataCollatorClassificationWithPadding
+
+    # Create a simple args object for DataCollatorClassificationWithPadding
+    class Args:
+        pass
+    args = Args()
+    args.SAT_METHOD = SAT_METHOD
+    args.MODEL_NAME = MODEL_NAME
+    args.DEVICE = DEVICE
+    args.WRITE_BASE_ALIGNMENTS = WRITE_BASE_ALIGNMENTS
+    args.BASELINE_TG_DIR = BASELINE_TG_DIR
+    args.MODEL_OUTPUT_DIR = MODEL_OUTPUT_DIR
+    args.NTRAIN_EPOCHS = NTRAIN_EPOCHS
+    args.RETRAIN = RETRAIN
+    args.TG_OUTPUT_DIR = TG_OUTPUT_DIR
 
     data_collator = DataCollatorClassificationWithPadding(args=args, processor=processor)
     tokenizer = processor.tokenizer
 
-    sat_size = 512 if args.SAT_METHOD else None
+    sat_size = 512 if SAT_METHOD else None
     model_cls = Wav2Vec2ForFrameClassificationSAT if sat_size else Wav2Vec2ForFrameClassification
 
     model = model_cls.from_pretrained(
-        args.MODEL_NAME,
+        MODEL_NAME,
         # gradient_checkpointing=True,
         pad_token_id=tokenizer.pad_token_id,
         vocab_size=len(tokenizer.decoder),
         **({"satvector_size": sat_size} if sat_size else {}),
     )
 
-    model = model.to(args.DEVICE)
+    model = model.to(DEVICE)
     model.wav2vec2.feature_extractor.conv_layers[6].conv.stride = (1,)
     model.config.conv_stride[-1] = 1
     model.freeze_feature_extractor()
 
     aligner_cls = xVecSAT_forced_aligner if sat_size else charsiu_forced_aligner
     aligner = (
-        aligner_cls(args.MODEL_NAME, satvector_size=sat_size)
+        aligner_cls(MODEL_NAME, satvector_size=sat_size)
         if sat_size
-        else aligner_cls(args.MODEL_NAME)
+        else aligner_cls(MODEL_NAME)
     )
     aligner.aligner = model
 
-    if args.WRITE_BASE_ALIGNMENTS and eval_dataset:
+    if WRITE_BASE_ALIGNMENTS and eval_dataset:
         write_textgrid_alignments_for_dataset(
-            aligner=aligner, dataset=eval_dataset, output_dir=args.BASELINE_TG_DIR
+            aligner=aligner, dataset=eval_dataset, output_dir=BASELINE_TG_DIR
         )
     else:
         print("No eval dataset found, no baseline alignments to write")
@@ -108,14 +134,14 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
     use_fp16 = torch.cuda.is_available()
 
     training_args = TrainingArguments(
-        output_dir=args.MODEL_OUTPUT_DIR,
+        output_dir=MODEL_OUTPUT_DIR,
         gradient_checkpointing=True,
         group_by_length=True,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=8,
         gradient_accumulation_steps=8,
         eval_strategy=eval_strategy,
-        num_train_epochs=args.NTRAIN_EPOCHS,
+        num_train_epochs=NTRAIN_EPOCHS,
         fp16=use_fp16,
         save_strategy="no",
         eval_steps=500,
@@ -136,31 +162,31 @@ def perform_train_test_split_run(args, train_dataset, processor, eval_dataset=No
         tokenizer=processor.feature_extractor,
     )
 
-    MODEL_DIR_IS_EMPTY = not os.listdir(args.MODEL_OUTPUT_DIR)
-    if MODEL_DIR_IS_EMPTY or args.RETRAIN:
+    MODEL_DIR_IS_EMPTY = not os.listdir(MODEL_OUTPUT_DIR)
+    if MODEL_DIR_IS_EMPTY or RETRAIN:
         print("***************************************************************")
         print("***************************************************************")
         print("\t\t\t BEGAN TRAINING \t\t\t")
         print("***************************************************************")
         print("***************************************************************")
         trainer.train()
-        trainer.save_model(args.MODEL_OUTPUT_DIR)
+        trainer.save_model(MODEL_OUTPUT_DIR)
         torch.save(
             trainer.model.state_dict(),
-            os.path.join(args.MODEL_OUTPUT_DIR, "pytorch_model.bin"),
+            os.path.join(MODEL_OUTPUT_DIR, "pytorch_model.bin"),
         )
         del model
 
     # Reload trained model and write alignments
     model = model_cls.from_pretrained(
-        args.MODEL_OUTPUT_DIR,
+        MODEL_OUTPUT_DIR,
         pad_token_id=tokenizer.pad_token_id,
         vocab_size=len(tokenizer.decoder),
         **({"satvector_size": sat_size} if sat_size else {}),
-    ).to(args.DEVICE)
+    ).to(DEVICE)
 
     aligner.aligner = model
     if eval_dataset is not None:
-        write_textgrid_alignments_for_dataset(aligner, eval_dataset, args.TG_OUTPUT_DIR)
+        write_textgrid_alignments_for_dataset(aligner, eval_dataset, TG_OUTPUT_DIR)
     else:
         print("⚠️  Skipping evaluation alignment generation (no eval dataset available)")

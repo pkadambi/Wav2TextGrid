@@ -36,7 +36,6 @@ class AlignerDataset(torch.utils.data.Dataset):
 
     def __init__(
         self,
-        args,
         audio_paths: list,
         textgrid_paths: list,
         phone_key: str = "phones",
@@ -44,12 +43,15 @@ class AlignerDataset(torch.utils.data.Dataset):
         adaptation_type: str = "xvec",
         satvector_path: "str | None" = None,
         model: "Wav2Vec2ForCTC | None" = None,
+        clean=False
     ):
         self.audio_paths = audio_paths
         self.textgrid_paths = textgrid_paths
         self.words_key = words_key
         self.phone_key = phone_key
+        print("PHONE_KEY = ", self.phone_key)
         self.model = model
+        self.device = "gpu" if torch.cuda.is_available() else "cpu"
 
         if (satvector_path is not None and adaptation_type is None) or (
             satvector_path is None and adaptation_type is not None
@@ -65,8 +67,8 @@ class AlignerDataset(torch.utils.data.Dataset):
         ):  # make this a dictionary instead, there's no reason why this should be a csv
             print("\nExtracting SAT Vectors")
             # satvector_path = f'{split}_{satvector_path}' if split is not None else satvector_path
-            if not os.path.exists(satvector_path) or args.CLEAN:
-                xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
+            if not os.path.exists(satvector_path) or clean:
+                xvx = xVecExtractor(adaptation_type, batch_size=64, device=self.device)
                 self.satvector_dict = get_satvector_dict(
                     audio_paths=audio_paths,
                     adaptation_type=adaptation_type,
@@ -82,7 +84,7 @@ class AlignerDataset(torch.utils.data.Dataset):
                 self.satvectors = [self.satvector_dict[pth] for pth in self.audio_paths]
             except Exception:
                 print("No files in previously speaker adaptation vectors... extracting again...")
-                xvx = xVecExtractor(adaptation_type, batch_size=64, device=args.DEVICE)
+                xvx = xVecExtractor(adaptation_type, batch_size=64, device=self.device)
                 self.satvector_dict = get_satvector_dict(
                     audio_paths=audio_paths,
                     adaptation_type=adaptation_type,
@@ -169,6 +171,7 @@ class AlignerDataset(torch.utils.data.Dataset):
         for ii, (_path, _tgpath) in enumerate(
             tqdm.tqdm(zip(self.audio_paths, self.textgrid_paths, strict=False))
         ):
+            print("Calling textgridpath_to_phonedf with phone_key =", self.phone_key)
             manual_tg_path = _tgpath
             phone_df = textgridpath_to_phonedf(
                 manual_tg_path, phone_key=self.phone_key, remove_numbers=True

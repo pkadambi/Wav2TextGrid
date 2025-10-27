@@ -30,7 +30,7 @@ dependencies = [
     "praatio>=6.2.0",
     "speechbrain>=1.0.3",
     "torch>=2.8.0",
-    "torchaudio>=2.8.0",
+    "torchaudio==2.8.0",
     "tqdm>=4.67.1",
     "transformers>=4.55.4",
 ]

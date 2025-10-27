@@ -35,22 +35,22 @@ def parse_args():
     parser.add_argument(
         "--train_audio_dir",
         type=str,
-        default="/media/prad/data/datasets/ChildSpeechDataset/traintest60Kids/TEST",
+        default="/Volumes/kchustad/ASUTransfer/AdultCorpus/adult_wavs_subset",
     )
     parser.add_argument(
         "--train_textgrids_dir",
-        default="/media/prad/data/datasets/ChildSpeechDataset/traintest60Kids/TEST",
+        default="/Volumes/kchustad/ASUTransfer/AdultCorpus/adult_w2tg_subset",
     )
     parser.add_argument("--sat_vectors_dctfile", default="satvectors.pkl")
     parser.add_argument("--run_output_folder", default="./Wav2TextGridResults")
     parser.add_argument(
         "--eval_audio_dir",
         type=str,
-        default="/media/prad/data/datasets/ChildSpeechDataset/traintest60Kids/TEST",
+        default=None,
     )
     parser.add_argument(
         "--eval_textgrids_dir",
-        default="/media/prad/data/datasets/ChildSpeechDataset/traintest60Kids/TEST",
+        default=None,
     )
     parser.add_argument("--model_output_dir", default="trained_model")
     parser.add_argument("--dataset_dir", default="./data")

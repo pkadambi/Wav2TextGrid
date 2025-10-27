@@ -67,31 +67,38 @@ def prepare_framewise_dataset(batch, mapping, unk_method="ignore"):
     return batch
 
 
-def create_dataset(dataset_audiofiles, dataset_textgrids, args, processor, suffix="train"):
+def create_dataset(
+    dataset_audiofiles,
+    dataset_textgrids,
+    dataset_dir,
+    phone_key,
+    words_key,
+    sat_method,
+    satvector_dctpath,
+    clean,
+    processor,
+    suffix="train"
+):
     tokenizer = processor.tokenizer
-    # model = Wav2Vec2ForFrameClassificationSAT.from_pretrained(
-    #     args.MODEL_NAME,
     model = Wav2Vec2ForFrameClassification.from_pretrained(
         "charsiu/en_w2v2_fc_10ms",
-        # gradient_checkpointing=True,
         pad_token_id=tokenizer.pad_token_id,
         vocab_size=len(tokenizer.decoder),
     )
     os.getcwd()
-    dataset_dir = os.path.abspath(args.DATASET_DIR)
+    dataset_dir = os.path.abspath(dataset_dir)
     dataset_dir = os.path.join(dataset_dir, suffix)
     os.makedirs(dataset_dir, exist_ok=True)
-    satvector_path = os.path.join(dataset_dir, args.SATVECTOR_DCTPATH)
+    satvector_path = os.path.join(dataset_dir, satvector_dctpath)
     DS_DIR_IS_EMPTY = not os.listdir(dataset_dir)
-
-    if DS_DIR_IS_EMPTY or args.CLEAN:
+    
+    if DS_DIR_IS_EMPTY or clean:
         ald = AlignerDataset(
-            args=args,
             audio_paths=dataset_audiofiles,
             textgrid_paths=dataset_textgrids,
-            phone_key=args.PHONE_KEY,
-            words_key=args.WORDS_KEY,
-            adaptation_type=args.SAT_METHOD,
+            phone_key=phone_key,
+            words_key=words_key,
+            adaptation_type=sat_method,
             satvector_path=satvector_path,
             model=model,
         )

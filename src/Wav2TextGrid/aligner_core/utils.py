@@ -144,7 +144,7 @@ def forced_align(cost, phone_ids):
 
 def textgridpath_to_phonedf(
     txtgrid_path: str,
-    phone_key: str,
+    phone_key: str = "phones",
     remove_numbers=False,
     replace_silence=False,
     silreplace_str="SIL",
@@ -154,6 +154,7 @@ def textgridpath_to_phonedf(
     txtgrid_path - the path to the textgridfile
     phone_key - the key in the textgrid for the phoneme column
     """
+    print("Processing TextGrid with phone_key =", phone_key)
     txtgrid = textgrid.openTextgrid(txtgrid_path, False)
     phndf = extract_phone_df_from_textgrid(
         txtgrid=txtgrid, phone_key=phone_key, remove_numbers=remove_numbers
@@ -176,16 +177,20 @@ def textgridpath_to_phonedf(
 
 
 def extract_phone_df_from_textgrid(
-    txtgrid: Textgrid, phone_key, remove_numbers=False, silchar="[SIL]", replace_SP=True
+    txtgrid: Textgrid, phone_key="phones", remove_numbers=False, silchar="[SIL]", replace_SP=True
 ):
     """
     txtgrid - praatio textgrid
     phone_key - the key for the phonemes
     """
-    try:
+    phonelist = None
+    print("Extracting phone df with phone_key =", phone_key)
+    if hasattr(txtgrid, "_tierDict") and phone_key in getattr(txtgrid, "_tierDict", {}):
         phonelist = txtgrid._tierDict[phone_key].entries
-    except Exception:
+    elif hasattr(txtgrid, "tierDict") and phone_key in getattr(txtgrid, "tierDict", {}):
         phonelist = txtgrid.tierDict[phone_key].entryList
+    else:
+        raise KeyError(f"Phone key '{phone_key}' not found in Textgrid tiers.")
 
     phoneslist_proc: list = []
     for interval in phonelist:
