@@ -25,11 +25,16 @@ def align_file(
     forced_aligner=None,
     target_phns=None,
     postproc=False,
+    use_speaker_adaptation=True,
 ):
-    xvector = xvec_extractor.extract_xvector(wavfilepath)
-    xvector = xvector[0][0].view(1, -1)
-    if torch.cuda.is_available():
-        xvector = xvector.cuda()
+    # Only extract and pass an x-vector when speaker adaptation is enabled
+    ixvector = None
+    if use_speaker_adaptation and xvec_extractor is not None:
+        xvector = xvec_extractor.extract_xvector(wavfilepath)
+        xvector = xvector[0][0].view(1, -1)
+        if torch.cuda.is_available():
+            xvector = xvector.cuda()
+        ixvector = xvector
 
     transcript = open(transcriptfilepath).readlines()[0]
     transcript = transcript.replace("\n", "")
@@ -37,28 +42,29 @@ def align_file(
         audio=wavfilepath,
         text=transcript,
         save_to=outfilepath,
-        ixvector=xvector,
+        ixvector=ixvector,
         target_phones=target_phns,
     )
 
 
 def main():
     parser = argparse.ArgumentParser()
-    # parser.add_argument('--wavfile_or_dir', default='./examples/',type=str)
     parser.add_argument("wavfile_or_dir", type=str)
-    # parser.add_argument('--transcriptfile_or_dir', default='./examples/', type=str)
     parser.add_argument("transcriptfile_or_dir", type=str)
-    # parser.add_argument('transcriptfile_or_dir', default='./examples/', type=str)
-    # parser.add_argument('--outfile_or_dir', default='./test/')#default=str)
-    parser.add_argument("outfile_or_dir", type=str)  # default=str)
+    parser.add_argument("outfile_or_dir", type=str)
     parser.add_argument("--filetype", default="wav")
     parser.add_argument("--aligner_model", type=str, default="pkadambi/Wav2TextGrid")
+    parser.add_argument(
+        "--disable-speaker-adaptation",
+        action="store_true",
+        help="Disable x-vector speaker adaptation (do not extract or pass x-vectors).",
+    )
     args = parser.parse_args()
 
-    # args.
-    # global xvx, aligner
+    use_speaker_adaptation = not args.disable_speaker_adaptation
 
-    xvx = xVecExtractor(method="xvector")
+    # Only create an xVecExtractor if speaker adaptation is enabled
+    xvx = xVecExtractor(method="xvector") if use_speaker_adaptation else None
 
     if os.path.isdir(args.wavfile_or_dir):
         align_dirs(
@@ -68,15 +74,19 @@ def main():
             xvx,
             args.aligner_model,
             args.filetype,
+            use_speaker_adaptation=use_speaker_adaptation,
         )
     else:
-        aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=512)
+        # satvector_size 0 disables adaptation in the aligner construction
+        sat_size = 512 if use_speaker_adaptation else 0
+        aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=sat_size)
         align_file(
             args.wavfile_or_dir,
             args.transcriptfile_or_dir,
             args.outfile_or_dir,
             xvec_extractor=xvx,
             forced_aligner=aligner,
+            use_speaker_adaptation=use_speaker_adaptation,
         )
 
 
@@ -88,14 +98,16 @@ def align_dirs(
     aligner_model=None,
     filetype="wav",
     postproc=False,
+    use_speaker_adaptation=True,
 ):
     # TODO: Remove redundancy with main() in terms of parameter passing
-    if xvx is None:
+    if xvx is None and use_speaker_adaptation:
         xvx = xVecExtractor(method="xvector")
     if aligner_model is None:
         aligner_model = "pkadambi/Wav2TextGrid"
 
-    aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=512)
+    sat_size = 512 if use_speaker_adaptation else 0
+    aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=sat_size)
 
     if platform.system() == "Windows":
         # Use pathlib for Windows, especially with UNC paths
@@ -123,7 +135,13 @@ def align_dirs(
             try:
                 # Align .wav and .lab files
                 align_file(
-                    wav_file, lab_file, outfpath, xvx, aligner, postproc=postproc
+                    wav_file,
+                    lab_file,
+                    outfpath,
+                    xvx,
+                    aligner,
+                    postproc=postproc,
+                    use_speaker_adaptation=use_speaker_adaptation,
                 )  # always avoid downsampling because it occurs earlier
                 success_count += 1
             except Exception as e:
