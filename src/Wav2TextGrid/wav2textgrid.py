@@ -59,6 +59,7 @@ def main():
         action="store_true",
         help="Disable x-vector speaker adaptation (do not extract or pass x-vectors).",
     )
+    parser.add_argument("--redownload_model", action='store_true')
     args = parser.parse_args()
 
     use_speaker_adaptation = not args.disable_speaker_adaptation
@@ -75,11 +76,12 @@ def main():
             args.aligner_model,
             args.filetype,
             use_speaker_adaptation=use_speaker_adaptation,
+            redownload_model=args.redownload_model,
         )
     else:
         # satvector_size 0 disables adaptation in the aligner construction
         sat_size = 512 if use_speaker_adaptation else 0
-        aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=sat_size)
+        aligner = xVecSAT_forced_aligner(args.aligner_model, satvector_size=sat_size, redownload_model=args.redownload_model)
         align_file(
             args.wavfile_or_dir,
             args.transcriptfile_or_dir,
@@ -99,6 +101,7 @@ def align_dirs(
     filetype="wav",
     postproc=False,
     use_speaker_adaptation=True,
+    redownload_model=False,
 ):
     # TODO: Remove redundancy with main() in terms of parameter passing
     if xvx is None and use_speaker_adaptation:
@@ -116,8 +119,8 @@ def align_dirs(
         sat_size = 512
     else:
         raise ValueError("Disabling speaker adaptation is not supported as of now.")
-
-    aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=sat_size)
+    
+    aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=sat_size, redownload_model=redownload_model)
 
     if platform.system() == "Windows":
         # Use pathlib for Windows, especially with UNC paths
