@@ -106,7 +106,17 @@ def align_dirs(
     if aligner_model is None:
         aligner_model = "pkadambi/Wav2TextGrid"
 
-    sat_size = 512 if use_speaker_adaptation else 0
+    # Validating combinations of arguments
+    if not use_speaker_adaptation and aligner_model == "pkadambi/Wav2TextGrid":
+        raise ValueError(
+            "The default aligner model requires speaker adaptation. Please enable speaker adaptation or provide a different aligner model."
+        )
+    
+    if use_speaker_adaptation:
+        sat_size = 512
+    else:
+        raise ValueError("Disabling speaker adaptation is not supported as of now.")
+
     aligner = xVecSAT_forced_aligner(aligner_model, satvector_size=sat_size)
 
     if platform.system() == "Windows":
