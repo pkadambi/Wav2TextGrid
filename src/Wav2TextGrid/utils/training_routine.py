@@ -110,7 +110,7 @@ def perform_train_test_split_run(
     model = model.to(DEVICE)
     model.wav2vec2.feature_extractor.conv_layers[6].conv.stride = (1,)
     model.config.conv_stride[-1] = 1
-    model.freeze_feature_extractor()
+    model.freeze_feature_encoder()
 
     aligner_cls = xVecSAT_forced_aligner if sat_size else charsiu_forced_aligner
     aligner = (
@@ -136,7 +136,6 @@ def perform_train_test_split_run(
     training_args = TrainingArguments(
         output_dir=MODEL_OUTPUT_DIR,
         gradient_checkpointing=True,
-        group_by_length=True,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=8,
         gradient_accumulation_steps=8,
@@ -159,7 +158,7 @@ def perform_train_test_split_run(
         compute_metrics=compute_metrics,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        tokenizer=processor.feature_extractor,
+        processing_class=processor.feature_extractor,
     )
 
     MODEL_DIR_IS_EMPTY = not os.listdir(MODEL_OUTPUT_DIR)
